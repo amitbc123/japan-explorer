@@ -494,16 +494,15 @@ document.querySelectorAll('.dict-tab').forEach(btn => {
 const dictSearchInput = document.getElementById('dictSearch');
 const searchResultsDiv = document.getElementById('searchResults');
 dictSearchInput.addEventListener('input', e => {
-  const query = e.target.value.trim().toLowerCase();
+  const query = e.target.value.trim();
   if (!query) { searchResultsDiv.innerHTML = ''; return; }
   const results = [];
   document.querySelectorAll('.phrase-card').forEach(card => {
-    const heb = card.querySelector('.phrase-hebrew')?.textContent.toLowerCase() || '';
-    const pron = card.querySelector('.phrase-japanese')?.textContent.toLowerCase() || '';
-    if (heb.includes(query) || pron.includes(query)) results.push(card.cloneNode(true));
+    const heb = card.querySelector('.phrase-hebrew')?.textContent || '';
+    if (heb.includes(query)) results.push(card.cloneNode(true));
   });
   searchResultsDiv.innerHTML = results.length === 0
-    ? '<div style="color:rgba(255,255,255,.5);padding:10px;text-align:center;">No results found</div>'
+    ? '<div style="color:rgba(255,255,255,.5);padding:10px;text-align:center;">לא נמצאו תוצאות</div>'
     : '';
   results.forEach(r => searchResultsDiv.appendChild(r));
   addSpeakButtons();
