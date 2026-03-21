@@ -1,83 +1,396 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Japan Trip 2026 🇯🇵</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>JapanTrip 2026 🇯🇵</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <div id="app">
-    <header>
-      <h1>🇯🇵 Japan Trip 2026</h1>
-      <p class="subtitle">Amit · Moshe · Omri</p>
-    </header>
-
-    <div id="calendar-section">
-      <div class="month-nav">
-        <button id="prevMonth">◀</button>
-        <h2 id="monthTitle"></h2>
-        <button id="nextMonth">▶</button>
-      </div>
-      <div id="calendar"></div>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-header">🇯🇵 JapanTrip 2026</div>
+    <div class="sidebar-menu">
+      <button class="nav-item active" data-page="home">
+        <span class="nav-icon">🏠</span><span>Home</span>
+      </button>
+      <button class="nav-item" data-page="expenses">
+        <span class="nav-icon">💴</span><span>Expenses</span>
+      </button>
+      <button class="nav-item" data-page="dict">
+        <span class="nav-icon">📖</span><span>Dictionary</span>
+      </button>
+      <button class="nav-item" data-page="toilet">
+        <span class="nav-icon">🚽</span><span>Toilet Guide</span>
+      </button>
+      <button class="nav-item" data-page="wheel">
+        <span class="nav-icon">🎡</span><span>Lucky Wheel</span>
+      </button>
+      <button class="nav-item" data-page="game">
+        <span class="nav-icon">🎮</span><span>Game</span>
+      </button>
     </div>
+  </nav>
 
-    <div id="day-panel" class="hidden">
-      <div class="day-panel-header">
-        <button id="closePanel">✕</button>
-        <h2 id="dayTitle"></h2>
-        <button id="editBtn" class="edit-btn">✏️ Edit</button>
-      </div>
+  <button class="menu-toggle" id="menuToggle">☰</button>
 
-      <div id="view-mode">
-        <div class="view-section" id="view-hotel"></div>
-        <div class="view-section" id="view-general"></div>
-        <div class="view-section" id="view-places"></div>
-        <div class="view-section" id="view-food"></div>
-        <div class="view-section" id="view-mood"></div>
-      </div>
+  <div class="app-content">
 
-      <div id="edit-mode" class="hidden">
-        <div class="section">
-          <h3>🏨 Hotel</h3>
-          <input type="text" id="hotelName" placeholder="Hotel name" />
-          <input type="text" id="hotelAddress" placeholder="Hotel address" />
+    <!-- HOME PAGE -->
+    <div class="page active" id="page-home">
+      <div class="container">
+        <h1 class="title">🇯🇵 JapanTrip 2026</h1>
+        <p class="subtitle">Amit · Moshe · Omri</p>
+
+        <div class="countdown-container" id="countdownContainer">
+          <div class="countdown" id="countdown">
+            <div class="time-block"><span class="time-value" id="days">000</span><span class="time-label">Days</span></div>
+            <div class="time-block"><span class="time-value" id="hours">00</span><span class="time-label">Hours</span></div>
+            <div class="time-block"><span class="time-value" id="minutes">00</span><span class="time-label">Min</span></div>
+            <div class="time-block"><span class="time-value" id="seconds">00</span><span class="time-label">Sec</span></div>
+          </div>
+          <div class="target-date">6 October 2026 | 19:45</div>
         </div>
 
-        <div class="section">
-          <h3>📋 General Info</h3>
-          <textarea id="generalInfo" placeholder="Transportation, budget, weather, anything..."></textarea>
+        <button class="currency-toggle-btn" id="currencyToggleBtn">💱 Currency Converter</button>
+
+        <div class="card currency-card hidden" id="currencyCard">
+          <div class="card-title">💱 Currency Converter</div>
+          <div class="currency-row">
+            <div class="currency-field">
+              <input type="number" id="shekel" placeholder="0" inputmode="decimal" />
+              <span class="currency-label">₪</span>
+            </div>
+            <button class="swap-btn" id="swapBtn">⇄</button>
+            <div class="currency-field">
+              <input type="number" id="yen" placeholder="0" inputmode="decimal" />
+              <span class="currency-label">¥</span>
+            </div>
+          </div>
+          <div class="rate-info" id="rateInfo">Loading rate...</div>
         </div>
 
-        <div class="section">
-          <h3>📍 Attractions</h3>
-          <div id="placesList"></div>
-          <button class="add-btn" id="addPlace">+ Add Attraction</button>
+        <div class="calendar-section" id="calendarSection">
+          <div class="month-nav">
+            <button id="prevMonth">◀</button>
+            <h2 id="monthTitle"></h2>
+            <button id="nextMonth">▶</button>
+          </div>
+          <div id="calendar"></div>
         </div>
 
-        <div class="section">
-          <h3>🍜 Food</h3>
-          <div id="foodList"></div>
-          <button class="add-btn" id="addFood">+ Add Restaurant</button>
-        </div>
+        <div id="day-panel" class="hidden">
+          <div class="day-panel-header">
+            <button id="closePanel">✕</button>
+            <h2 id="dayTitle"></h2>
+            <button id="editBtn" class="edit-btn">✏️ Edit</button>
+          </div>
 
-        <div class="section">
-          <h3>Omri Mood</h3>
-          <div class="mood-selector" id="moodSelector">
-            <button class="mood-btn" data-mood="sad">😢</button>
-            <button class="mood-btn" data-mood="neutral">😐</button>
-            <button class="mood-btn" data-mood="happy">😄</button>
-            <button class="mood-btn" data-mood="angry">😤</button>
+          <div id="view-mode">
+            <div class="view-section" id="view-hotel"></div>
+            <div class="view-section" id="view-general"></div>
+            <div class="view-section" id="view-places"></div>
+            <div class="view-section" id="view-food"></div>
+            <div class="view-section" id="view-mood"></div>
+          </div>
+
+          <div id="edit-mode" class="hidden">
+            <div class="section">
+              <h3>🏨 Hotel</h3>
+              <input type="text" id="hotelName" placeholder="Hotel name" />
+              <input type="text" id="hotelAddress" placeholder="Hotel address" />
+            </div>
+            <div class="section">
+              <h3>📋 General Info</h3>
+              <textarea id="generalInfo" placeholder="Transportation, budget, weather, anything..."></textarea>
+            </div>
+            <div class="section">
+              <h3>📍 Attractions</h3>
+              <div id="placesList"></div>
+              <button class="add-btn" id="addPlace">+ Add Attraction</button>
+            </div>
+            <div class="section">
+              <h3>🍜 Food</h3>
+              <div id="foodList"></div>
+              <button class="add-btn" id="addFood">+ Add Restaurant</button>
+            </div>
+            <div class="section">
+              <h3>Omri Mood</h3>
+              <div class="mood-selector" id="moodSelector">
+                <button class="mood-btn" data-mood="sad">😢</button>
+                <button class="mood-btn" data-mood="neutral">😐</button>
+                <button class="mood-btn" data-mood="happy">😄</button>
+                <button class="mood-btn" data-mood="angry">😤</button>
+              </div>
+            </div>
+            <button id="saveDay" class="save-btn">💾 Save</button>
+            <button id="cancelEdit" class="cancel-btn">Cancel</button>
           </div>
         </div>
 
-        <button id="saveDay" class="save-btn">💾 Save</button>
-        <button id="cancelEdit" class="cancel-btn">Cancel</button>
       </div>
     </div>
+
+    <!-- EXPENSES PAGE -->
+    <div class="page" id="page-expenses">
+      <div class="container">
+        <h2 class="page-title">💴 Expenses</h2>
+
+        <div class="card">
+          <div class="card-title">➕ Add Expense</div>
+          <input type="text" id="expDesc" placeholder="Description (e.g. Ramen lunch)" class="exp-input" />
+          <div class="exp-row">
+            <input type="number" id="expAmount" placeholder="Amount" inputmode="decimal" class="exp-input" />
+            <select id="expCurrency" class="exp-select">
+              <option value="JPY">¥ JPY</option>
+              <option value="ILS">₪ ILS</option>
+            </select>
+          </div>
+          <div class="exp-label">Paid by:</div>
+          <div class="payer-selector">
+            <button class="payer-btn active" data-payer="Amit">Amit</button>
+            <button class="payer-btn" data-payer="Moshe">Moshe</button>
+            <button class="payer-btn" data-payer="Omri">Omri</button>
+          </div>
+          <div class="exp-label">Split between:</div>
+          <div class="split-selector">
+            <button class="split-btn active" data-person="Amit">Amit</button>
+            <button class="split-btn active" data-person="Moshe">Moshe</button>
+            <button class="split-btn active" data-person="Omri">Omri</button>
+          </div>
+          <button class="save-btn" id="addExpenseBtn">➕ Add Expense</button>
+        </div>
+
+        <div class="card" id="balanceCard">
+          <div class="card-title">📊 Who Owes Who</div>
+          <div id="balanceSummary"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">📋 All Expenses</div>
+          <div id="expensesList"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- DICTIONARY PAGE -->
+    <div class="page" id="page-dict">
+      <div class="container">
+        <h2 class="page-title">📖 Japanese Dictionary</h2>
+        <input type="text" id="dictSearch" placeholder="🔍 Search..." class="dict-search" />
+        <div id="searchResults" class="search-results-container"></div>
+
+        <div class="dict-tabs">
+          <button class="dict-tab active" data-dict="basic">Daily</button>
+          <button class="dict-tab" data-dict="food">Food</button>
+          <button class="dict-tab" data-dict="social">Social</button>
+          <button class="dict-tab" data-dict="hotel">Hotel</button>
+          <button class="dict-tab" data-dict="transport">Transport</button>
+          <button class="dict-tab" data-dict="jokes">Jokes</button>
+          <button class="dict-tab" data-dict="emergency">Emergency</button>
+          <button class="dict-tab" data-dict="forbidden">🚫 Forbidden</button>
+        </div>
+
+        <!-- Daily -->
+        <div class="dict-section active" id="dict-basic">
+          <div class="phrase-card"><div class="phrase-hebrew">סליחה</div><div class="phrase-japanese">Sumimasen</div><div class="phrase-pronunciation">すみません</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">תודה רבה</div><div class="phrase-japanese">Arigatou gozaimasu</div><div class="phrase-pronunciation">ありがとうございます</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">כן</div><div class="phrase-japanese">Hai</div><div class="phrase-pronunciation">はい</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">לא</div><div class="phrase-japanese">Iie</div><div class="phrase-pronunciation">いいえ</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">אני לא מבין</div><div class="phrase-japanese">Wakarimasen</div><div class="phrase-pronunciation">わかりません</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">אתה מדבר אנגלית?</div><div class="phrase-japanese">Eigo o hanasemasu ka</div><div class="phrase-pronunciation">英語を話せますか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">אפשר עזרה?</div><div class="phrase-japanese">Tasukete moraemasu ka</div><div class="phrase-pronunciation">助けてもらえますか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">איפה השירותים?</div><div class="phrase-japanese">Toire wa doko desu ka</div><div class="phrase-pronunciation">トイレはどこですか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">כמה זמן זה לוקח?</div><div class="phrase-japanese">Dono kurai kakarimasu ka</div><div class="phrase-pronunciation">どのくらいかかりますか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">אפשר לשלם בכרטיס?</div><div class="phrase-japanese">Kaado de haraemasu ka</div><div class="phrase-pronunciation">カードで払えますか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">רק מזומן</div><div class="phrase-japanese">Genkin dake desu</div><div class="phrase-pronunciation">現金だけです</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">כמה זה עולה?</div><div class="phrase-japanese">Ikura desu ka</div><div class="phrase-pronunciation">いくらですか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">איפה תחנת הרכבת?</div><div class="phrase-japanese">Eki wa doko desu ka</div><div class="phrase-pronunciation">駅はどこですか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">גדול / קטן</div><div class="phrase-japanese">Ookii / Chiisai</div><div class="phrase-pronunciation">大きい / 小さい</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">מאוד</div><div class="phrase-japanese">Totemo</div><div class="phrase-pronunciation">とても</div></div>
+        </div>
+
+        <!-- Food -->
+        <div class="dict-section" id="dict-food">
+          <div class="phrase-card"><div class="phrase-hebrew">אני אלרגי לחלב / ללקטוז</div><div class="phrase-japanese">Watashi wa gyuunyuu oyobi nyuuseihin ni arerugii ga arimasu</div><div class="phrase-pronunciation">私は牛乳および乳製品にアレルギーがあります</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">יש לי אלרגיה לחלב</div><div class="phrase-japanese">Gyuunyuu ni arerugii ga arimasu</div><div class="phrase-pronunciation">牛乳にアレルギーがあります</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">יש לי רגישות ללקטוז</div><div class="phrase-japanese">Nyuutou futaishou desu</div><div class="phrase-pronunciation">乳糖不耐症です</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">יש לי קוליטיס</div><div class="phrase-japanese">Daichouen ga arimasu</div><div class="phrase-pronunciation">大腸炎があります</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">יש בזה חלב?</div><div class="phrase-japanese">Kore wa gyuunyuu ga haitte imasu ka</div><div class="phrase-pronunciation">これは牛乳が入っていますか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">יש בזה מוצרי חלב?</div><div class="phrase-japanese">Nyuuseihin wa haitte imasu ka</div><div class="phrase-pronunciation">乳製品は入っていますか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">זה חריף?</div><div class="phrase-japanese">Kore wa karai desu ka</div><div class="phrase-pronunciation">これは辛いですか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">זה מבושל או נא?</div><div class="phrase-japanese">Yaita desu ka, nama desu ka</div><div class="phrase-pronunciation">焼いたですか、生ですか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">זה בטוח בשבילי?</div><div class="phrase-japanese">Tabete mo daijoubu desu ka</div><div class="phrase-pronunciation">食べても大丈夫ですか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">אפשר בלי חלב?</div><div class="phrase-japanese">Gyuunyuu nashi de dekimasu ka</div><div class="phrase-pronunciation">牛乳なしでできますか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">סושי</div><div class="phrase-japanese">Sushi</div><div class="phrase-pronunciation">寿司</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">ראמן</div><div class="phrase-japanese">Raamen</div><div class="phrase-pronunciation">ラーメン</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">טונה</div><div class="phrase-japanese">Maguro</div><div class="phrase-pronunciation">マグロ</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">סלמון</div><div class="phrase-japanese">Saamon</div><div class="phrase-pronunciation">サーモン</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">אנגיל (צלופח)</div><div class="phrase-japanese">Unagi</div><div class="phrase-pronunciation">うなぎ</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">שרימפס</div><div class="phrase-japanese">Ebi</div><div class="phrase-pronunciation">エビ</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">מה זה מכיל?</div><div class="phrase-japanese">Kore wa nani ga haitte imasu ka</div><div class="phrase-pronunciation">これは何が入っていますか</div></div>
+        </div>
+
+        <!-- Social -->
+        <div class="dict-section" id="dict-social">
+          <div class="phrase-card"><div class="phrase-hebrew">סליחה, אפשר לשאול משהו?</div><div class="phrase-japanese">Sumimasen, chotto ii desu ka</div><div class="phrase-pronunciation">すみません、ちょっといいですか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">לא רציתי להפריע</div><div class="phrase-japanese">Jama shite sumimasen</div><div class="phrase-pronunciation">邪魔してすみません</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">מאיפה את?</div><div class="phrase-japanese">Doko kara kimashita ka</div><div class="phrase-pronunciation">どこから来ましたか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">אני מישראל</div><div class="phrase-japanese">Israeru kara kimashita</div><div class="phrase-pronunciation">イスラエルから来ました</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">המקום הזה נחמד</div><div class="phrase-japanese">Koko wa ii basho desu ne</div><div class="phrase-pronunciation">ここはいい場所ですね</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">נעים להכיר</div><div class="phrase-japanese">Yoroshiku onegaishimasu</div><div class="phrase-pronunciation">よろしくお願いします</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">כיף לדבר איתך</div><div class="phrase-japanese">Hanashite tanoshii desu</div><div class="phrase-pronunciation">話して楽しいです</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">את מאוד מקסימה</div><div class="phrase-japanese">Totemo suteki desu ne</div><div class="phrase-pronunciation">とても素敵ですね</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">אפשר לשבת לידך?</div><div class="phrase-japanese">Tonari ni suwatte mo ii desu ka</div><div class="phrase-pronunciation">隣に座ってもいいですか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">בא לך קפה?</div><div class="phrase-japanese">Koohii demo ikimasen ka</div><div class="phrase-pronunciation">コーヒーでも行きませんか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">אולי ניפגש שוב?</div><div class="phrase-japanese">Mata aimasen ka</div><div class="phrase-pronunciation">また会いませんか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">יש לך LINE?</div><div class="phrase-japanese">Rain o tsukatte imasu ka</div><div class="phrase-pronunciation">LINEを使っていますか</div></div>
+        </div>
+
+        <!-- Hotel -->
+        <div class="dict-section" id="dict-hotel">
+          <div class="phrase-card"><div class="phrase-hebrew">יש לי הזמנה</div><div class="phrase-japanese">Yoyaku ga arimasu</div><div class="phrase-pronunciation">予約があります</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">אפשר צ'ק-אין?</div><div class="phrase-japanese">Chekku in o onegaishimasu</div><div class="phrase-pronunciation">チェックインをお願いします</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">מתי צ'ק-אאוט?</div><div class="phrase-japanese">Chekku auto wa itsu desu ka</div><div class="phrase-pronunciation">チェックアウトはいつですか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">יש Wi-Fi?</div><div class="phrase-japanese">Waifai wa arimasu ka</div><div class="phrase-pronunciation">Wi-Fiはありますか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">מה הסיסמה?</div><div class="phrase-japanese">Pasuwaado wa nan desu ka</div><div class="phrase-pronunciation">パスワードは何ですか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">יש מעלית?</div><div class="phrase-japanese">Erebeetaa wa arimasu ka</div><div class="phrase-pronunciation">エレベーターはありますか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">אפשר לשמור על המזוודה?</div><div class="phrase-japanese">Nimotsu o azukatte moraemasu ka</div><div class="phrase-pronunciation">荷物を預かってもらえますか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">יש בעיה בחדר</div><div class="phrase-japanese">Heya ni mondai ga arimasu</div><div class="phrase-pronunciation">部屋に問題があります</div></div>
+        </div>
+
+        <!-- Transport -->
+        <div class="dict-section" id="dict-transport">
+          <div class="phrase-card"><div class="phrase-hebrew">איפה תחנת הרכבת?</div><div class="phrase-japanese">Eki wa doko desu ka</div><div class="phrase-pronunciation">駅はどこですか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">איפה האוטובוס?</div><div class="phrase-japanese">Basu wa doko desu ka</div><div class="phrase-pronunciation">バスはどこですか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">כמה זה עולה?</div><div class="phrase-japanese">Ikura desu ka</div><div class="phrase-pronunciation">いくらですか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">מתי זה יוצא?</div><div class="phrase-japanese">Itsu demasu ka</div><div class="phrase-pronunciation">いつ出ますか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">זה הקו הנכון?</div><div class="phrase-japanese">Kono sen de ii desu ka</div><div class="phrase-pronunciation">この線でいいですか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">צריך להחליף רכבת?</div><div class="phrase-japanese">Norikae ga hitsuyou desu ka</div><div class="phrase-pronunciation">乗り換えが必要ですか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">תחנה הבאה</div><div class="phrase-japanese">Tsugi no eki</div><div class="phrase-pronunciation">次の駅</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">אני צריך לרדת פה</div><div class="phrase-japanese">Koko de orimasu</div><div class="phrase-pronunciation">ここで降ります</div></div>
+        </div>
+
+        <!-- Jokes -->
+        <div class="dict-section" id="dict-jokes">
+          <div class="phrase-card"><div class="phrase-hebrew">הוא לא בסדר היום</div><div class="phrase-japanese">Kare wa kyou chotto hen desu</div><div class="phrase-pronunciation">彼は今日ちょっと変です</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">אנחנו בבעיה</div><div class="phrase-japanese">Watashitachi wa mondai ga arimasu</div><div class="phrase-pronunciation">私たちは問題があります</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">זה לא לפי התכנון</div><div class="phrase-japanese">Keikaku doori janai desu</div><div class="phrase-pronunciation">計画通りじゃないです</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">הוא אבוד</div><div class="phrase-japanese">Kare wa michi ni mayoimashita</div><div class="phrase-pronunciation">彼は道に迷いました</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">זה רעיון לא טוב</div><div class="phrase-japanese">Sore wa amari yoku nai aidea desu</div><div class="phrase-pronunciation">それはあまり良くないアイデアです</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">הוא עייף נפשית</div><div class="phrase-japanese">Kare wa seishinteki ni tsukarete imasu</div><div class="phrase-pronunciation">彼は精神的に疲れています</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">אין לנו מושג</div><div class="phrase-japanese">Zenzen wakarimasen</div><div class="phrase-pronunciation">全然わかりません</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">זה חמור</div><div class="phrase-japanese">Kenkou jou mondai desu</div><div class="phrase-pronunciation">健康上問題です</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">הכול בשליטה (NOT)</div><div class="phrase-japanese">Zenbu kanri shite imasu</div><div class="phrase-pronunciation">全部管理しています</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">נא להישאר רגועים</div><div class="phrase-japanese">Ochitsuite kudasai</div><div class="phrase-pronunciation">落ち着いてください</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">הוא לא סטרייט</div><div class="phrase-japanese">Kare wa sutoreeto ja nai desu</div><div class="phrase-pronunciation">彼はストレートじゃないです</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">זה ייקח זמן</div><div class="phrase-japanese">Jikan ga kakarimasu</div><div class="phrase-pronunciation">時間がかかります</div></div>
+        </div>
+
+        <!-- Emergency -->
+        <div class="dict-section" id="dict-emergency">
+          <div class="phrase-card"><div class="phrase-hebrew">עזרה!</div><div class="phrase-japanese">Tasukete!</div><div class="phrase-pronunciation">助けて！</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">התקשרו לאמבולנס!</div><div class="phrase-japanese">Kyuukyuusha o yonde kudasai!</div><div class="phrase-pronunciation">救急車を呼んでください！</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">התקשרו למשטרה!</div><div class="phrase-japanese">Keisatsu o yonde kudasai!</div><div class="phrase-pronunciation">警察を呼んでください！</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">אני חולה</div><div class="phrase-japanese">Watashi wa byouki desu</div><div class="phrase-pronunciation">私は病気です</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">אני צריך רופא</div><div class="phrase-japanese">Isha ga hitsuyou desu</div><div class="phrase-pronunciation">医者が必要です</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">איפה בית החולים?</div><div class="phrase-japanese">Byouin wa doko desu ka</div><div class="phrase-pronunciation">病院はどこですか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">אני צריך תרופה</div><div class="phrase-japanese">Kusuri ga hitsuyou desu</div><div class="phrase-pronunciation">薬が必要です</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">גנבו לי</div><div class="phrase-japanese">Nusumaremashita</div><div class="phrase-pronunciation">盗まれました</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">אבדתי את הדרך</div><div class="phrase-japanese">Michi ni mayoimashita</div><div class="phrase-pronunciation">道に迷いました</div></div>
+        </div>
+
+        <!-- Forbidden -->
+        <div class="dict-section" id="dict-forbidden">
+          <div class="phrase-card forbidden-card"><div class="phrase-hebrew">⚠️ מילים אסורות — השתמשו בזהירות</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">שתוק</div><div class="phrase-japanese">Urusai</div><div class="phrase-pronunciation">うるさい</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">טיפש</div><div class="phrase-japanese">Baka</div><div class="phrase-pronunciation">バカ</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">לך לעזאזל</div><div class="phrase-japanese">Achi ike</div><div class="phrase-pronunciation">あっちいけ</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">אני שונא אותך</div><div class="phrase-japanese">Anta ga kirai</div><div class="phrase-pronunciation">あんたが嫌い</div></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TOILET PAGE -->
+    <div class="page" id="page-toilet">
+      <div class="container">
+        <h2 class="page-title">🚽 Japanese Toilet Guide</h2>
+        <div class="card">
+          <div class="toilet-grid">
+            <div class="toilet-symbol"><div class="symbol-icon">💦</div><div class="symbol-text">Small flush</div></div>
+            <div class="toilet-symbol"><div class="symbol-icon">💦💦</div><div class="symbol-text">Big flush</div></div>
+            <div class="toilet-symbol"><div class="symbol-icon">🍑💦</div><div class="symbol-text">Bidet (rear)</div></div>
+            <div class="toilet-symbol"><div class="symbol-icon">👩💦</div><div class="symbol-text">Bidet (front)</div></div>
+            <div class="toilet-symbol"><div class="symbol-icon">💨</div><div class="symbol-text">Dry</div></div>
+            <div class="toilet-symbol"><div class="symbol-icon">⏹️</div><div class="symbol-text">Stop</div></div>
+            <div class="toilet-symbol"><div class="symbol-icon">🎵</div><div class="symbol-text">Sound (privacy)</div></div>
+            <div class="toilet-symbol"><div class="symbol-icon">🌡️</div><div class="symbol-text">Seat temperature</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- WHEEL PAGE -->
+    <div class="page" id="page-wheel">
+      <div class="container">
+        <h2 class="page-title">🎡 Lucky Wheel</h2>
+        <div class="card">
+          <div class="card-title">📍 Which city?</div>
+          <div class="wheel-city-selector">
+            <select id="wheelCity">
+              <option value="">Choose city...</option>
+              <option value="Tokyo">Tokyo</option>
+              <option value="Osaka">Osaka</option>
+              <option value="Kyoto">Kyoto</option>
+              <option value="Hiroshima">Hiroshima</option>
+              <option value="Nara">Nara</option>
+              <option value="Yokohama">Yokohama</option>
+              <option value="Sapporo">Sapporo</option>
+              <option value="Fukuoka">Fukuoka</option>
+              <option value="Kobe">Kobe</option>
+              <option value="Nagoya">Nagoya</option>
+            </select>
+          </div>
+          <div class="card-title" style="margin-top:15px">🎯 What are you looking for?</div>
+          <div class="wheel-type-selector">
+            <button class="wheel-type-btn active" data-type="food">🍜 Food</button>
+            <button class="wheel-type-btn" data-type="fun">🎪 Fun</button>
+          </div>
+        </div>
+        <div class="card wheel-container">
+          <canvas id="wheelCanvas" width="350" height="350"></canvas>
+          <div class="wheel-pointer">▼</div>
+          <button class="wheel-spin-btn" id="wheelSpinBtn">Spin! 🎰</button>
+        </div>
+        <div class="card hidden" id="wheelResult">
+          <div class="wheel-result-icon" id="wheelResultIcon"></div>
+          <div class="wheel-result-title" id="wheelResultTitle"></div>
+          <div class="wheel-result-type" id="wheelResultType"></div>
+          <div class="wheel-result-address" id="wheelResultAddress"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GAME PAGE -->
+    <div class="page" id="page-game">
+      <div class="container">
+        <h2 class="page-title">🎮 Japanese Quiz</h2>
+        <div class="card" id="gameCard">
+          <div id="gameQuestion" class="game-question"></div>
+          <div id="gameOptions" class="game-options"></div>
+          <div id="gameFeedback" class="game-feedback"></div>
+          <div id="gameScore" class="game-score"></div>
+          <button id="nextQuestion" class="save-btn hidden">Next ➡️</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
+  <!-- Location Modal -->
   <div id="location-modal" class="modal-overlay hidden">
     <div class="modal-box">
       <div class="modal-header">
