@@ -47,7 +47,7 @@ document.querySelectorAll('.nav-item').forEach(btn => {
 });
 
 // ── Countdown ──
-const targetDate = new Date('2026-10-06T19:45:00+03:00').getTime();
+const targetDate = new Date('2026-10-06T16:45:00Z').getTime();
 function updateCountdown() {
   const diff = targetDate - Date.now();
   const container = document.getElementById('countdownContainer');
