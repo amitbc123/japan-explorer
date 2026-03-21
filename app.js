@@ -86,7 +86,11 @@ async function renderCalendar() {
     if (isTripDay(date)) el.classList.add('trip-day');
     if (date.toDateString() === today.toDateString()) el.classList.add('today');
     if (selectedDate && date.toDateString() === selectedDate.toDateString()) el.classList.add('selected');
-    if (snapshots[i].exists()) el.classList.add('has-data');
+    const snapData = snapshots[i].exists() ? snapshots[i].data() : {};
+    const hasRealData = snapData.hotelName || snapData.generalInfo || snapData.mood ||
+      (snapData.places && snapData.places.some(p => p.name)) ||
+      (snapData.food && snapData.food.some(f => f.name));
+    if (hasRealData) el.classList.add('has-data');
     if (isTripDay(date)) {
       el.addEventListener('click', () => {
         selectedDate = date;
@@ -273,7 +277,16 @@ async function saveDay() {
     food: getFood(),
     mood: selectedMood
   };
-  await setDoc(doc(db, 'days', key), currentData);
+  const isEmpty = !currentData.hotelName && !currentData.hotelAddress &&
+    !currentData.generalInfo && !currentData.mood &&
+    currentData.places.every(p => !p.name && !p.address && !p.notes) &&
+    currentData.food.every(f => !f.name && !f.address && !f.notes);
+
+  if (isEmpty) {
+    await setDoc(doc(db, 'days', key), {});
+  } else {
+    await setDoc(doc(db, 'days', key), currentData);
+  }
   renderViewMode();
   showViewMode();
   renderCalendar();
