@@ -448,9 +448,9 @@ function renderBalance(expenses) {
     summary.innerHTML = '<div class="balance-ok">✅ All settled up!</div>';
     return;
   }
-  summary.innerHTML = debts.map(d => `
+summary.innerHTML = debts.map(d => `
     <div class="balance-item">
-      <div class="balance-text">💸 ${d.from} → ${d.to}</div>
+      <div class="balance-text">💸 ${d.to} ← ${d.from} owes</div>
       <div class="balance-amount">₪${d.amount.toFixed(2)}</div>
     </div>`).join('');
 }
