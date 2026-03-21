@@ -15,11 +15,26 @@ const db = getFirestore(app);
 
 const tripStart = new Date(2026, 9, 6);
 const tripEnd = new Date(2026, 11, 6);
-
 let currentMonth = new Date(2026, 9, 1);
 let selectedDate = null;
 let currentData = {};
 let selectedMood = '';
+let modalMapsUrl = '';
+
+const savedTheme = localStorage.getItem('theme') || 'theme-blue';
+document.body.className = savedTheme;
+document.querySelectorAll('.theme-opt').forEach(btn => {
+  btn.classList.toggle('active', btn.dataset.theme === savedTheme);
+});
+
+document.querySelectorAll('.theme-opt').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.body.className = btn.dataset.theme;
+    localStorage.setItem('theme', btn.dataset.theme);
+    document.querySelectorAll('.theme-opt').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
 
 function isTripDay(date) {
   return date >= tripStart && date <= tripEnd;
@@ -36,12 +51,10 @@ function formatDateTitle(date) {
 async function renderCalendar() {
   const calendar = document.getElementById('calendar');
   const monthTitle = document.getElementById('monthTitle');
-
   monthTitle.textContent = currentMonth.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
   calendar.innerHTML = '';
 
-  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  days.forEach(d => {
+  ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(d => {
     const el = document.createElement('div');
     el.className = 'cal-day-header';
     el.textContent = d;
@@ -52,12 +65,6 @@ async function renderCalendar() {
   const daysInMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth()+1, 0).getDate();
   const today = new Date();
 
-  for (let i = 0; i < firstDay; i++) {
-    const empty = document.createElement('div');
-    empty.className = 'cal-day empty';
-    calendar.appendChild(empty);
-  }
-
   const keys = [];
   for (let d = 1; d <= daysInMonth; d++) {
     const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), d);
@@ -66,16 +73,20 @@ async function renderCalendar() {
 
   const snapshots = await Promise.all(keys.map(({ key }) => getDoc(doc(db, 'days', key))));
 
-  keys.forEach(({ date, key }, i) => {
+  for (let i = 0; i < firstDay; i++) {
+    const empty = document.createElement('div');
+    empty.className = 'cal-day empty';
+    calendar.appendChild(empty);
+  }
+
+  keys.forEach(({ date }, i) => {
     const el = document.createElement('div');
     el.className = 'cal-day';
     el.textContent = date.getDate();
-
     if (isTripDay(date)) el.classList.add('trip-day');
     if (date.toDateString() === today.toDateString()) el.classList.add('today');
     if (selectedDate && date.toDateString() === selectedDate.toDateString()) el.classList.add('selected');
     if (snapshots[i].exists()) el.classList.add('has-data');
-
     if (isTripDay(date)) {
       el.addEventListener('click', () => {
         selectedDate = date;
@@ -86,7 +97,6 @@ async function renderCalendar() {
         loadDayData(date);
       });
     }
-
     calendar.appendChild(el);
   });
 }
@@ -104,56 +114,84 @@ function renderViewMode() {
 
   const hotelEl = document.getElementById('view-hotel');
   if (d.hotelName || d.hotelAddress) {
-    hotelEl.innerHTML = `<h3>🏨 Accommodation</h3>
-      <div class="view-item">
+    hotelEl.innerHTML = `<h3>🏨 Hotel</h3>
+      <div class="view-item" data-name="${d.hotelName||''}" data-address="${d.hotelAddress||''}" data-notes="" data-type="hotel">
         <div class="view-item-name">${d.hotelName || ''}</div>
-        <div class="view-item-address">${d.hotelAddress || ''}</div>
-        ${d.hotelAddress ? `<a class="maps-btn" href="https://www.google.com/maps/search/${encodeURIComponent(d.hotelName+' '+d.hotelAddress)}" target="_blank">📍 Google Maps</a>` : ''}
+        <div class="view-item-tap">📍 Tap for location</div>
       </div>`;
-  } else {
-    hotelEl.innerHTML = '';
-  }
+  } else { hotelEl.innerHTML = ''; }
 
   const generalEl = document.getElementById('view-general');
   if (d.generalInfo) {
     generalEl.innerHTML = `<h3>📋 General Info</h3><p>${d.generalInfo}</p>`;
-  } else {
-    generalEl.innerHTML = '';
-  }
+  } else { generalEl.innerHTML = ''; }
 
   const placesEl = document.getElementById('view-places');
   if (d.places && d.places.length > 0) {
     placesEl.innerHTML = `<h3>📍 Attractions</h3>` + d.places.map(p => `
-      <div class="view-item">
+      <div class="view-item" data-name="${p.name||''}" data-address="${p.address||''}" data-notes="${p.notes||''}">
         <div class="view-item-name">${p.name || ''}</div>
-        <div class="view-item-address">${p.address || ''}</div>
-        ${p.notes ? `<div class="view-item-notes">${p.notes}</div>` : ''}
-        ${p.name ? `<a class="maps-btn" href="https://www.google.com/maps/search/${encodeURIComponent(p.name+' '+(p.address||'')+' Japan')}" target="_blank">📍 Google Maps</a>` : ''}
+        <div class="view-item-tap">📍 Tap for details & location</div>
       </div>`).join('');
-  } else {
-    placesEl.innerHTML = '';
-  }
+  } else { placesEl.innerHTML = ''; }
 
   const foodEl = document.getElementById('view-food');
   if (d.food && d.food.length > 0) {
-    foodEl.innerHTML = `<h3>🍜 Food & Restaurants</h3>` + d.food.map(f => `
-      <div class="view-item">
+    foodEl.innerHTML = `<h3>🍜 Food</h3>` + d.food.map(f => `
+      <div class="view-item" data-name="${f.name||''}" data-address="${f.address||''}" data-notes="${f.notes||''}">
         <div class="view-item-name">${f.name || ''}</div>
-        <div class="view-item-address">${f.address || ''}</div>
-        ${f.notes ? `<div class="view-item-notes">${f.notes}</div>` : ''}
-        ${f.name ? `<a class="maps-btn" href="https://www.google.com/maps/search/${encodeURIComponent(f.name+' '+(f.address||'')+' Japan')}" target="_blank">📍 Google Maps</a>` : ''}
+        <div class="view-item-tap">📍 Tap for details & location</div>
       </div>`).join('');
-  } else {
-    foodEl.innerHTML = '';
-  }
+  } else { foodEl.innerHTML = ''; }
 
   const moodEl = document.getElementById('view-mood');
   const moodMap = { sad: '😢', neutral: '😐', happy: '😄', angry: '😤' };
   if (d.mood) {
     moodEl.innerHTML = `<h3>😄 Omri's Mood</h3><div class="mood-display">${moodMap[d.mood]}</div>`;
-  } else {
-    moodEl.innerHTML = '';
+  } else { moodEl.innerHTML = ''; }
+
+  document.querySelectorAll('.view-item').forEach(item => {
+    item.addEventListener('click', () => openLocationModal(
+      item.dataset.name,
+      item.dataset.address,
+      item.dataset.notes
+    ));
+  });
+}
+
+function openLocationModal(name, address, notes) {
+  document.getElementById('modal-title').textContent = name;
+  document.getElementById('modal-notes').textContent = notes || '';
+  document.getElementById('modalSearchInput').value = address || name;
+  document.getElementById('modalSearchResults').innerHTML = '';
+  modalMapsUrl = `https://www.google.com/maps/search/${encodeURIComponent((name||'')+(address?' '+address:'')+' Japan')}`;
+  document.getElementById('modalMapsBtn').href = modalMapsUrl;
+  document.getElementById('location-modal').classList.remove('hidden');
+}
+
+async function searchLocation(query) {
+  if (!query) return;
+  const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query+' Japan')}&format=json&limit=5&accept-language=en`;
+  const res = await fetch(url);
+  const data = await res.json();
+  const results = document.getElementById('modalSearchResults');
+  results.innerHTML = '';
+  if (data.length === 0) {
+    results.innerHTML = '<div class="search-result-item">No results found</div>';
+    return;
   }
+  data.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'search-result-item';
+    div.textContent = item.display_name;
+    div.addEventListener('click', () => {
+      modalMapsUrl = `https://www.google.com/maps/search/?api=1&query=${item.lat},${item.lon}`;
+      document.getElementById('modalMapsBtn').href = modalMapsUrl;
+      document.getElementById('modalSearchInput').value = item.display_name;
+      results.innerHTML = '';
+    });
+    results.appendChild(div);
+  });
 }
 
 function showViewMode() {
@@ -166,17 +204,14 @@ function showEditMode() {
   document.getElementById('view-mode').classList.add('hidden');
   document.getElementById('edit-mode').classList.remove('hidden');
   document.getElementById('editBtn').classList.add('hidden');
-
   const d = currentData;
   document.getElementById('hotelName').value = d.hotelName || '';
   document.getElementById('hotelAddress').value = d.hotelAddress || '';
   document.getElementById('generalInfo').value = d.generalInfo || '';
-
   selectedMood = d.mood || '';
   document.querySelectorAll('.mood-btn').forEach(btn => {
     btn.classList.toggle('selected', btn.dataset.mood === selectedMood);
   });
-
   renderPlaces(d.places || []);
   renderFood(d.food || []);
 }
@@ -188,11 +223,10 @@ function renderPlaces(places) {
     const div = document.createElement('div');
     div.className = 'place-item';
     div.innerHTML = `
-      <input type="text" placeholder="Attraction name" value="${p.name || ''}" data-index="${i}" data-field="name" />
-      <input type="text" placeholder="Address" value="${p.address || ''}" data-index="${i}" data-field="address" />
-      <textarea placeholder="Notes (optional)" data-index="${i}" data-field="notes">${p.notes || ''}</textarea>
-      <button class="remove-btn" data-index="${i}">✕</button>
-    `;
+      <input type="text" placeholder="Attraction name" value="${p.name||''}" data-index="${i}" data-field="name" />
+      <input type="text" placeholder="Address" value="${p.address||''}" data-index="${i}" data-field="address" />
+      <textarea placeholder="Notes (optional)" data-index="${i}" data-field="notes">${p.notes||''}</textarea>
+      <button class="remove-btn" data-index="${i}">✕</button>`;
     list.appendChild(div);
   });
 }
@@ -204,11 +238,10 @@ function renderFood(food) {
     const div = document.createElement('div');
     div.className = 'food-item';
     div.innerHTML = `
-      <input type="text" placeholder="Restaurant / Food name" value="${f.name || ''}" data-index="${i}" data-field="name" />
-      <input type="text" placeholder="Address (optional)" value="${f.address || ''}" data-index="${i}" data-field="address" />
-      <textarea placeholder="Notes (optional)" data-index="${i}" data-field="notes">${f.notes || ''}</textarea>
-      <button class="remove-btn" data-index="${i}">✕</button>
-    `;
+      <input type="text" placeholder="Restaurant / Food name" value="${f.name||''}" data-index="${i}" data-field="name" />
+      <input type="text" placeholder="Address (optional)" value="${f.address||''}" data-index="${i}" data-field="address" />
+      <textarea placeholder="Notes (optional)" data-index="${i}" data-field="notes">${f.notes||''}</textarea>
+      <button class="remove-btn" data-index="${i}">✕</button>`;
     list.appendChild(div);
   });
 }
@@ -250,36 +283,28 @@ document.getElementById('prevMonth').addEventListener('click', () => {
   currentMonth.setMonth(currentMonth.getMonth() - 1);
   renderCalendar();
 });
-
 document.getElementById('nextMonth').addEventListener('click', () => {
   currentMonth.setMonth(currentMonth.getMonth() + 1);
   renderCalendar();
 });
-
 document.getElementById('closePanel').addEventListener('click', () => {
   document.getElementById('day-panel').classList.add('hidden');
   document.getElementById('calendar-section').classList.remove('collapsed');
   selectedDate = null;
   renderCalendar();
 });
-
 document.getElementById('editBtn').addEventListener('click', showEditMode);
-
 document.getElementById('cancelEdit').addEventListener('click', () => {
   showViewMode();
   renderViewMode();
 });
-
 document.getElementById('saveDay').addEventListener('click', saveDay);
-
 document.getElementById('addPlace').addEventListener('click', () => {
   renderPlaces([...getPlaces(), { name: '', address: '', notes: '' }]);
 });
-
 document.getElementById('addFood').addEventListener('click', () => {
   renderFood([...getFood(), { name: '', address: '', notes: '' }]);
 });
-
 document.getElementById('placesList').addEventListener('click', (e) => {
   if (e.target.classList.contains('remove-btn')) {
     const places = getPlaces();
@@ -287,7 +312,6 @@ document.getElementById('placesList').addEventListener('click', (e) => {
     renderPlaces(places);
   }
 });
-
 document.getElementById('foodList').addEventListener('click', (e) => {
   if (e.target.classList.contains('remove-btn')) {
     const food = getFood();
@@ -295,7 +319,6 @@ document.getElementById('foodList').addEventListener('click', (e) => {
     renderFood(food);
   }
 });
-
 document.getElementById('moodSelector').addEventListener('click', (e) => {
   if (e.target.classList.contains('mood-btn')) {
     selectedMood = e.target.dataset.mood;
@@ -303,6 +326,20 @@ document.getElementById('moodSelector').addEventListener('click', (e) => {
       btn.classList.toggle('selected', btn.dataset.mood === selectedMood);
     });
   }
+});
+document.getElementById('closeModal').addEventListener('click', () => {
+  document.getElementById('location-modal').classList.add('hidden');
+});
+document.getElementById('location-modal').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('location-modal')) {
+    document.getElementById('location-modal').classList.add('hidden');
+  }
+});
+
+let searchTimeout;
+document.getElementById('modalSearchInput').addEventListener('input', (e) => {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => searchLocation(e.target.value), 500);
 });
 
 renderCalendar();
