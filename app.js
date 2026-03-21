@@ -13,28 +13,14 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+document.body.className = 'theme-blue';
+
 const tripStart = new Date(2026, 9, 6);
 const tripEnd = new Date(2026, 11, 6);
 let currentMonth = new Date(2026, 9, 1);
 let selectedDate = null;
 let currentData = {};
 let selectedMood = '';
-let modalMapsUrl = '';
-
-const savedTheme = localStorage.getItem('theme') || 'theme-blue';
-document.body.className = savedTheme;
-document.querySelectorAll('.theme-opt').forEach(btn => {
-  btn.classList.toggle('active', btn.dataset.theme === savedTheme);
-});
-
-document.querySelectorAll('.theme-opt').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.body.className = btn.dataset.theme;
-    localStorage.setItem('theme', btn.dataset.theme);
-    document.querySelectorAll('.theme-opt').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-  });
-});
 
 function isTripDay(date) {
   return date >= tripStart && date <= tripEnd;
@@ -119,7 +105,7 @@ function renderViewMode() {
   const hotelEl = document.getElementById('view-hotel');
   if (d.hotelName || d.hotelAddress) {
     hotelEl.innerHTML = `<h3>🏨 Hotel</h3>
-      <div class="view-item" data-name="${d.hotelName||''}" data-address="${d.hotelAddress||''}" data-notes="" data-type="hotel">
+      <div class="view-item" data-name="${d.hotelName||''}" data-address="${d.hotelAddress||''}" data-notes="">
         <div class="view-item-name">${d.hotelName || ''}</div>
         <div class="view-item-tap">📍 Tap for location</div>
       </div>`;
@@ -168,8 +154,7 @@ function openLocationModal(name, address, notes) {
   document.getElementById('modal-notes').textContent = notes || '';
   document.getElementById('modalSearchInput').value = address || name;
   document.getElementById('modalSearchResults').innerHTML = '';
-  modalMapsUrl = `https://www.google.com/maps/search/${encodeURIComponent((name||'')+(address?' '+address:'')+' Japan')}`;
-  document.getElementById('modalMapsBtn').href = modalMapsUrl;
+  document.getElementById('modalMapsBtn').href = `https://www.google.com/maps/search/${encodeURIComponent((name||'')+(address?' '+address:'')+' Japan')}`;
   document.getElementById('location-modal').classList.remove('hidden');
 }
 
@@ -189,8 +174,7 @@ async function searchLocation(query) {
     div.className = 'search-result-item';
     div.textContent = item.display_name;
     div.addEventListener('click', () => {
-      modalMapsUrl = `https://www.google.com/maps/search/?api=1&query=${item.lat},${item.lon}`;
-      document.getElementById('modalMapsBtn').href = modalMapsUrl;
+      document.getElementById('modalMapsBtn').href = `https://www.google.com/maps/search/?api=1&query=${item.lat},${item.lon}`;
       document.getElementById('modalSearchInput').value = item.display_name;
       results.innerHTML = '';
     });
@@ -281,7 +265,6 @@ async function saveDay() {
     !currentData.generalInfo && !currentData.mood &&
     currentData.places.every(p => !p.name && !p.address && !p.notes) &&
     currentData.food.every(f => !f.name && !f.address && !f.notes);
-
   if (isEmpty) {
     await setDoc(doc(db, 'days', key), {});
   } else {
