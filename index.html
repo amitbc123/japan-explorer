@@ -153,11 +153,26 @@
             <button class="payer-btn" data-payer="Moshe">Moshe</button>
             <button class="payer-btn" data-payer="Omri">Omri</button>
           </div>
-          <div class="exp-label">Split between:</div>
+<div class="exp-label">Split between:</div>
           <div class="split-selector">
             <button class="split-btn active" data-person="Amit">Amit</button>
             <button class="split-btn active" data-person="Moshe">Moshe</button>
             <button class="split-btn active" data-person="Omri">Omri</button>
+          </div>
+          <div class="exp-label">Custom split amounts (optional):</div>
+          <div class="custom-split-row">
+            <div class="custom-split-item">
+              <label>Amit</label>
+              <input type="number" id="splitAmit" placeholder="Auto" inputmode="decimal" class="exp-input custom-split-input" />
+            </div>
+            <div class="custom-split-item">
+              <label>Moshe</label>
+              <input type="number" id="splitMoshe" placeholder="Auto" inputmode="decimal" class="exp-input custom-split-input" />
+            </div>
+            <div class="custom-split-item">
+              <label>Omri</label>
+              <input type="number" id="splitOmri" placeholder="Auto" inputmode="decimal" class="exp-input custom-split-input" />
+            </div>
           </div>
           <button class="save-btn" id="addExpenseBtn">➕ Add Expense</button>
         </div>
