@@ -12,6 +12,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const people = ['Amit', 'Moshe', 'Omri'];
 
 // ── Sidebar ──
 const sidebar = document.getElementById('sidebar');
@@ -378,7 +379,7 @@ document.getElementById('modalSearchInput').addEventListener('input', e => {
 // ── Expenses ──
 let selectedPayer = 'Amit';
 let selectedSplit = ['Amit', 'Moshe', 'Omri'];
-const people = ['Amit', 'Moshe', 'Omri'];
+
 
 document.querySelectorAll('.payer-btn').forEach(btn => {
   btn.addEventListener('click', () => {
