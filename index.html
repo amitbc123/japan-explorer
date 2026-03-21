@@ -6,10 +6,16 @@
   <title>Japan Trip 2026 🇯🇵</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body>
+<body class="theme-blue">
 
   <div id="app">
     <header>
+      <div class="theme-switcher">
+        <button class="theme-opt active" data-theme="theme-blue" title="Japanese Blue">🔵</button>
+        <button class="theme-opt" data-theme="theme-light" title="Light">⚪</button>
+        <button class="theme-opt" data-theme="theme-green" title="Nature">🟢</button>
+        <button class="theme-opt" data-theme="theme-purple" title="Purple Gold">🟣</button>
+      </div>
       <h1>🇯🇵 Japan Trip 2026</h1>
       <p class="subtitle">Amit · Moshe · Omri</p>
     </header>
@@ -24,7 +30,6 @@
     </div>
 
     <div id="day-panel" class="hidden">
-
       <div class="day-panel-header">
         <button id="closePanel">✕</button>
         <h2 id="dayTitle"></h2>
@@ -41,7 +46,7 @@
 
       <div id="edit-mode" class="hidden">
         <div class="section">
-          <h3>🏨 Accommodation</h3>
+          <h3>🏨 Hotel</h3>
           <input type="text" id="hotelName" placeholder="Hotel name" />
           <input type="text" id="hotelAddress" placeholder="Hotel address" />
         </div>
@@ -58,9 +63,9 @@
         </div>
 
         <div class="section">
-          <h3>🍜 Food & Restaurants</h3>
+          <h3>🍜 Food</h3>
           <div id="foodList"></div>
-          <button class="add-btn" id="addFood">+ Add Restaurant / Food</button>
+          <button class="add-btn" id="addFood">+ Add Restaurant</button>
         </div>
 
         <div class="section">
@@ -76,7 +81,21 @@
         <button id="saveDay" class="save-btn">💾 Save</button>
         <button id="cancelEdit" class="cancel-btn">Cancel</button>
       </div>
+    </div>
+  </div>
 
+  <div id="location-modal" class="modal-overlay hidden">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="modal-title"></h3>
+        <button id="closeModal">✕</button>
+      </div>
+      <div id="modal-notes" class="modal-notes"></div>
+      <div class="modal-search">
+        <input type="text" id="modalSearchInput" placeholder="Search location..." />
+        <div id="modalSearchResults" class="search-results"></div>
+      </div>
+      <a id="modalMapsBtn" class="maps-btn" target="_blank">📍 Open in Google Maps</a>
     </div>
   </div>
 
