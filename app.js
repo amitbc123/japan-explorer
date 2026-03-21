@@ -463,11 +463,18 @@ document.getElementById('addExpenseBtn').addEventListener('click', async () => {
     alert('Please fill in all fields and select at least one person to split with.');
     return;
   }
-  await addDoc(collection(db, 'expenses'), {
-    desc, amount, currency,
-    payer: selectedPayer,
-    split: selectedSplit,
-    timestamp: Date.now()
+expenses.forEach(e => {
+    let amount = parseFloat(e.amount);
+    if (e.currency === 'JPY') amount = amount / jpyPerIls;
+    balances[e.payer] += amount;
+    if (e.customSplit) {
+      Object.entries(e.customSplit).forEach(([person, share]) => {
+        if (balances[person] !== undefined) balances[person] -= parseFloat(share) || 0;
+      });
+    } else {
+      const share = amount / e.split.length;
+      e.split.forEach(p => { balances[p] -= share; });
+    }
   });
   document.getElementById('expDesc').value = '';
   document.getElementById('expAmount').value = '';
