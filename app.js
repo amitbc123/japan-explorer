@@ -509,8 +509,8 @@ function renderExpenses(expenses) {
   expenses.forEach((e, idx) => {
     const item = document.querySelector(`[data-exp-index="${idx}"]`);
 
-    item.addEventListener('click', (ev) => {
-      if (ev.target.classList.contains('expense-delete')) return;
+  item.addEventListener('click', (ev) => {
+      if (ev.target.classList.contains('expense-delete') || ev.target.closest('.expense-delete')) return;
 
       let amount = parseFloat(e.amount);
       const symbol = e.currency === 'JPY' ? '¥' : '₪';
