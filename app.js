@@ -52,7 +52,7 @@ function updateCountdown() {
   const diff = targetDate - Date.now();
   const container = document.getElementById('countdownContainer');
   if (diff <= 0) {
-    container.innerHTML = '<h2 style="font-size:2rem;color:#feca57;">🎉 We are in Japan! 🎉</h2>';
+    container.innerHTML = '<h2 style="font-size:2rem;color:#feca57;direction:ltr;">🎉 We are in Japan! 🎉</h2>';
     return;
   }
   document.getElementById('days').textContent = Math.floor(diff / 86400000).toString().padStart(3, '0');
@@ -189,7 +189,7 @@ function renderViewMode() {
   generalEl.innerHTML = d.generalInfo ? `<h3>📋 General Info</h3><p>${d.generalInfo}</p>` : '';
 
   const placesEl = document.getElementById('view-places');
-  if (d.places && d.places.length > 0 && d.places.some(p => p.name)) {
+  if (d.places && d.places.some(p => p.name)) {
     placesEl.innerHTML = `<h3>📍 Attractions</h3>` + d.places.filter(p => p.name).map(p => `
       <div class="view-item" data-name="${p.name||''}" data-address="${p.address||''}" data-notes="${p.notes||''}">
         <div class="view-item-name">${p.name}</div>
@@ -198,7 +198,7 @@ function renderViewMode() {
   } else { placesEl.innerHTML = ''; }
 
   const foodEl = document.getElementById('view-food');
-  if (d.food && d.food.length > 0 && d.food.some(f => f.name)) {
+  if (d.food && d.food.some(f => f.name)) {
     foodEl.innerHTML = `<h3>🍜 Food</h3>` + d.food.filter(f => f.name).map(f => `
       <div class="view-item" data-name="${f.name||''}" data-address="${f.address||''}" data-notes="${f.notes||''}">
         <div class="view-item-name">${f.name}</div>
@@ -366,6 +366,7 @@ document.getElementById('modalSearchInput').addEventListener('input', e => {
 // ── Expenses ──
 let selectedPayer = 'Amit';
 let selectedSplit = ['Amit', 'Moshe', 'Omri'];
+const people = ['Amit', 'Moshe', 'Omri'];
 
 document.querySelectorAll('.payer-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -375,10 +376,93 @@ document.querySelectorAll('.payer-btn').forEach(btn => {
   });
 });
 
+function updateCustomSplitInputs() {
+  const amount = parseFloat(document.getElementById('expAmount').value) || 0;
+  const equalShare = selectedSplit.length > 0 ? (amount / selectedSplit.length) : 0;
+
+  people.forEach(person => {
+    const input = document.getElementById('split' + person);
+    const item = document.getElementById('customItem' + person);
+    if (selectedSplit.includes(person)) {
+      item.style.opacity = '1';
+      input.disabled = false;
+      if (!input.value) {
+        input.placeholder = equalShare > 0 ? equalShare.toFixed(0) : 'Auto';
+      }
+    } else {
+      item.style.opacity = '0.3';
+      input.disabled = true;
+      input.value = '';
+      input.placeholder = '-';
+    }
+  });
+
+  validateCustomSplit();
+}
+
+function validateCustomSplit() {
+  const amount = parseFloat(document.getElementById('expAmount').value) || 0;
+  const validation = document.getElementById('splitValidation');
+  if (amount === 0) { validation.textContent = ''; return true; }
+
+  const amitVal = parseFloat(document.getElementById('splitAmit').value);
+  const mosheVal = parseFloat(document.getElementById('splitMoshe').value);
+  const omriVal = parseFloat(document.getElementById('splitOmri').value);
+
+  const hasAny = !isNaN(amitVal) || !isNaN(mosheVal) || !isNaN(omriVal);
+  if (!hasAny) { validation.textContent = ''; return true; }
+
+  let total = 0;
+  people.forEach(p => {
+    if (selectedSplit.includes(p)) {
+      const v = parseFloat(document.getElementById('split'+p).value);
+      if (!isNaN(v)) total += v;
+    }
+  });
+
+  if (total > amount) {
+    validation.textContent = `⚠️ Total (${total.toFixed(0)}) exceeds amount (${amount.toFixed(0)})`;
+    validation.style.color = '#e94560';
+
+    people.forEach(p => {
+      if (selectedSplit.includes(p)) {
+        const input = document.getElementById('split'+p);
+        const v = parseFloat(input.value);
+        if (!isNaN(v) && v > amount) {
+          input.value = amount;
+        }
+      }
+    });
+    return false;
+  }
+
+  if (Math.abs(total - amount) < 0.5) {
+    validation.textContent = `✅ Split OK (${total.toFixed(0)})`;
+    validation.style.color = '#52b788';
+  } else {
+    validation.textContent = `Remaining: ${(amount - total).toFixed(0)}`;
+    validation.style.color = '#feca57';
+  }
+  return true;
+}
+
+document.getElementById('expAmount').addEventListener('input', updateCustomSplitInputs);
+
+people.forEach(p => {
+  const input = document.getElementById('split'+p);
+  input.addEventListener('input', () => {
+    const amount = parseFloat(document.getElementById('expAmount').value) || 0;
+    const v = parseFloat(input.value);
+    if (!isNaN(v) && v > amount) input.value = amount;
+    validateCustomSplit();
+  });
+});
+
 document.querySelectorAll('.split-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     btn.classList.toggle('active');
     selectedSplit = Array.from(document.querySelectorAll('.split-btn.active')).map(b => b.dataset.person);
+    updateCustomSplitInputs();
   });
 });
 
@@ -418,15 +502,20 @@ function renderExpenses(expenses) {
 }
 
 function renderBalance(expenses) {
-  const people = ['Amit', 'Moshe', 'Omri'];
   const balances = { Amit: 0, Moshe: 0, Omri: 0 };
 
   expenses.forEach(e => {
     let amount = parseFloat(e.amount);
     if (e.currency === 'JPY') amount = amount / jpyPerIls;
-    const share = amount / e.split.length;
     balances[e.payer] += amount;
-    e.split.forEach(p => { balances[p] -= share; });
+    if (e.customSplit) {
+      Object.entries(e.customSplit).forEach(([person, share]) => {
+        if (balances[person] !== undefined) balances[person] -= parseFloat(share) / (e.currency === 'JPY' ? jpyPerIls : 1);
+      });
+    } else {
+      const share = amount / e.split.length;
+      e.split.forEach(p => { balances[p] -= share; });
+    }
   });
 
   const debts = [];
@@ -438,7 +527,7 @@ function renderBalance(expenses) {
     if (Math.abs(bal[maxCreditor]) < 0.5 || Math.abs(bal[maxDebtor]) < 0.5) break;
     const amount = Math.min(bal[maxCreditor], -bal[maxDebtor]);
     if (amount < 0.5) break;
-    debts.push({ from: maxDebtor, to: maxCreditor, amount });
+    debts.push({ from: maxDebtor, to: maxCreditor, amountILS: amount });
     bal[maxCreditor] -= amount;
     bal[maxDebtor] += amount;
   }
@@ -448,10 +537,13 @@ function renderBalance(expenses) {
     summary.innerHTML = '<div class="balance-ok">✅ All settled up!</div>';
     return;
   }
-summary.innerHTML = debts.map(d => `
+  summary.innerHTML = debts.map(d => `
     <div class="balance-item">
-      <div class="balance-text">💸 ${d.to} ← ${d.from} owes</div>
-      <div class="balance-amount">₪${d.amount.toFixed(2)}</div>
+      <div class="balance-text">💸 ${d.from} owes ${d.to}</div>
+      <div class="balance-amounts">
+        <span class="balance-amount">₪${d.amountILS.toFixed(2)}</span>
+        <span class="balance-amount-jpy">¥${Math.round(d.amountILS * jpyPerIls).toLocaleString()}</span>
+      </div>
     </div>`).join('');
 }
 
@@ -459,25 +551,46 @@ document.getElementById('addExpenseBtn').addEventListener('click', async () => {
   const desc = document.getElementById('expDesc').value.trim();
   const amount = parseFloat(document.getElementById('expAmount').value);
   const currency = document.getElementById('expCurrency').value;
-  if (!desc || isNaN(amount) || amount <= 0 || selectedSplit.length === 0) {
-    alert('Please fill in all fields and select at least one person to split with.');
+
+  if (!desc || isNaN(amount) || amount <= 0) {
+    alert('Please enter a description and amount.');
     return;
   }
-expenses.forEach(e => {
-    let amount = parseFloat(e.amount);
-    if (e.currency === 'JPY') amount = amount / jpyPerIls;
-    balances[e.payer] += amount;
-    if (e.customSplit) {
-      Object.entries(e.customSplit).forEach(([person, share]) => {
-        if (balances[person] !== undefined) balances[person] -= parseFloat(share) || 0;
-      });
-    } else {
-      const share = amount / e.split.length;
-      e.split.forEach(p => { balances[p] -= share; });
-    }
+  if (selectedSplit.length === 0) {
+    alert('Please select at least one person to split with.');
+    return;
+  }
+
+  const amitVal = parseFloat(document.getElementById('splitAmit').value);
+  const mosheVal = parseFloat(document.getElementById('splitMoshe').value);
+  const omriVal = parseFloat(document.getElementById('splitOmri').value);
+  const hasCustom = !isNaN(amitVal) || !isNaN(mosheVal) || !isNaN(omriVal);
+
+  let customSplit = null;
+  if (hasCustom) {
+    const equalShare = amount / selectedSplit.length;
+    customSplit = {
+      Amit: selectedSplit.includes('Amit') ? (!isNaN(amitVal) ? amitVal : equalShare) : 0,
+      Moshe: selectedSplit.includes('Moshe') ? (!isNaN(mosheVal) ? mosheVal : equalShare) : 0,
+      Omri: selectedSplit.includes('Omri') ? (!isNaN(omriVal) ? omriVal : equalShare) : 0,
+    };
+  }
+
+  await addDoc(collection(db, 'expenses'), {
+    desc, amount, currency,
+    payer: selectedPayer,
+    split: selectedSplit,
+    customSplit: customSplit,
+    timestamp: Date.now()
   });
+
   document.getElementById('expDesc').value = '';
   document.getElementById('expAmount').value = '';
+  document.getElementById('splitAmit').value = '';
+  document.getElementById('splitMoshe').value = '';
+  document.getElementById('splitOmri').value = '';
+  document.getElementById('splitValidation').textContent = '';
+  updateCustomSplitInputs();
   loadExpenses();
 });
 
@@ -549,7 +662,7 @@ let wheelRotation = 0;
 let wheelSpinning = false;
 let selectedCity = '';
 let selectedType = 'food';
-const wheelColors = ['#e94560','#0f3460','#e94560','#16213e','#533483','#2b9348','#e94560','#0f3460'];
+const wheelColors = ['#e94560','#0f3460','#533483','#16213e','#2b9348','#e94560','#0f3460','#533483'];
 
 function drawWheel() {
   if (!wheelCtx || wheelOptions.length === 0) return;
@@ -594,10 +707,10 @@ function getDefaultPlaces(city, type) {
 async function fetchPlaces(city, type) {
   try {
     const categories = type === 'food'
-      ? ['restaurant','cafe','ramen','sushi','izakaya','bakery']
-      : ['attraction','museum','park','shopping','landmark','arcade'];
+      ? ['restaurant','cafe','ramen','sushi','izakaya']
+      : ['attraction','museum','park','shopping','landmark'];
     const places = [];
-    for (const cat of categories.slice(0,5)) {
+    for (const cat of categories) {
       const url = `https://api.foursquare.com/v3/places/search?near=${city},Japan&query=${cat}&limit=1`;
       const res = await fetch(url, { headers: { 'Authorization': 'fsq3...', 'Accept': 'application/json' } });
       if (res.ok) {
@@ -724,3 +837,4 @@ loadQuestion();
 renderCalendar();
 loadExpenses();
 addSpeakButtons();
+updateCustomSplitInputs();
