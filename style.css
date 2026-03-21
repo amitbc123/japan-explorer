@@ -62,7 +62,7 @@ header .subtitle {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 6px;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 .cal-day-header {
@@ -102,7 +102,7 @@ header .subtitle {
 }
 
 .cal-day.selected {
-  background: rgba(254, 202, 87, 0.3);
+  background: rgba(254, 202, 87, 0.35);
   border-color: #feca57;
 }
 
@@ -120,6 +120,29 @@ header .subtitle {
   cursor: default;
 }
 
+#calendar-section.collapsed #calendar {
+  display: none;
+}
+
+#calendar-section.collapsed .month-nav {
+  margin-bottom: 0;
+}
+
+.calendar-toggle {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.calendar-toggle button {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.6);
+  padding: 6px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
 .hidden {
   display: none !important;
 }
@@ -128,12 +151,14 @@ header .subtitle {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
 }
 
 .day-panel-header h2 {
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: #feca57;
+  flex: 1;
+  text-align: center;
 }
 
 #closePanel {
@@ -147,15 +172,39 @@ header .subtitle {
   font-size: 1rem;
 }
 
+.edit-btn {
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
 .save-btn {
   background: #ff6b6b;
   border: none;
   color: #fff;
-  padding: 8px 16px;
-  border-radius: 20px;
+  padding: 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.cancel-btn {
+  background: rgba(255,255,255,0.07);
+  border: none;
+  color: rgba(255,255,255,0.6);
+  padding: 10px;
+  border-radius: 12px;
   cursor: pointer;
   font-size: 0.9rem;
-  font-weight: bold;
+  width: 100%;
+  margin-bottom: 20px;
 }
 
 .section {
@@ -173,8 +222,7 @@ header .subtitle {
 
 .section input[type="text"],
 .section input[type="number"],
-.section textarea,
-.section select {
+.section textarea {
   width: 100%;
   background: rgba(255,255,255,0.08);
   border: 1px solid rgba(255,255,255,0.15);
@@ -187,27 +235,13 @@ header .subtitle {
 }
 
 .section textarea {
-  min-height: 80px;
+  min-height: 90px;
   resize: vertical;
 }
 
 .section input::placeholder,
 .section textarea::placeholder {
   color: rgba(255,255,255,0.3);
-}
-
-.budget-row {
-  display: flex;
-  gap: 10px;
-}
-
-.budget-row input {
-  flex: 1;
-}
-
-.budget-row select {
-  width: 110px;
-  flex-shrink: 0;
 }
 
 .add-btn {
@@ -220,17 +254,9 @@ header .subtitle {
   cursor: pointer;
   font-size: 0.9rem;
   margin-top: 5px;
-  transition: all 0.2s;
-}
-
-.add-btn:hover {
-  background: rgba(255,255,255,0.12);
 }
 
 .place-item, .food-item {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
   background: rgba(255,255,255,0.05);
   border-radius: 10px;
   padding: 10px;
@@ -239,7 +265,7 @@ header .subtitle {
 }
 
 .place-item input, .food-item input {
-  margin-bottom: 0 !important;
+  margin-bottom: 6px !important;
 }
 
 .remove-btn {
@@ -257,8 +283,8 @@ header .subtitle {
 }
 
 .maps-btn {
-  background: rgba(66, 133, 244, 0.2);
-  border: 1px solid rgba(66, 133, 244, 0.4);
+  background: rgba(66,133,244,0.2);
+  border: 1px solid rgba(66,133,244,0.4);
   color: #4285f4;
   padding: 6px 12px;
   border-radius: 8px;
@@ -266,5 +292,81 @@ header .subtitle {
   font-size: 0.8rem;
   text-decoration: none;
   display: inline-block;
-  margin-top: 4px;
+  margin-top: 2px;
+}
+
+.mood-selector {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 5px;
+}
+
+.mood-btn {
+  font-size: 2rem;
+  background: none;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  padding: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mood-btn.selected {
+  border-color: #feca57;
+  background: rgba(254,202,87,0.15);
+}
+
+.view-section {
+  background: rgba(255,255,255,0.05);
+  border-radius: 15px;
+  padding: 18px;
+  margin-bottom: 15px;
+}
+
+.view-section:empty {
+  display: none;
+}
+
+.view-section h3 {
+  font-size: 1rem;
+  color: #feca57;
+  margin-bottom: 12px;
+}
+
+.view-section p {
+  color: rgba(255,255,255,0.8);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.view-item {
+  background: rgba(255,255,255,0.05);
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 8px;
+}
+
+.view-item-name {
+  font-weight: bold;
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+}
+
+.view-item-address {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 8px;
+}
+
+.view-item-notes {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.7);
+  white-space: pre-wrap;
+}
+
+.mood-display {
+  font-size: 3rem;
+  text-align: center;
+  padding: 10px 0;
 }
