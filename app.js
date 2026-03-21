@@ -493,8 +493,8 @@ function renderExpenses(expenses) {
     list.innerHTML = '<div style="color:rgba(255,255,255,.4);text-align:center;padding:15px;">No expenses yet</div>';
     return;
   }
-  list.innerHTML = expenses.map(e => `
-    <div class="expense-item">
+  list.innerHTML = expenses.map((e, idx) => `
+    <div class="expense-item" data-exp-index="${idx}" style="cursor:pointer;">
       <div class="expense-item-top">
         <div class="expense-desc">${e.desc}</div>
         <div style="display:flex;gap:8px;align-items:center;">
@@ -504,6 +504,40 @@ function renderExpenses(expenses) {
       </div>
       <div class="expense-meta">Paid by: ${e.payer} · Split: ${e.split.join(', ')}</div>
     </div>`).join('');
+
+  expenses.forEach((e, idx) => {
+    const item = document.querySelector(`[data-exp-index="${idx}"]`);
+
+    item.addEventListener('click', (ev) => {
+      if (ev.target.classList.contains('expense-delete')) return;
+
+      let amount = parseFloat(e.amount);
+      const symbol = e.currency === 'JPY' ? '¥' : '₪';
+      const toILS = e.currency === 'JPY' ? (v => v / jpyPerIls) : (v => v);
+      const toJPY = e.currency === 'JPY' ? (v => v) : (v => v * jpyPerIls);
+
+      const lines = people.map(person => {
+        let share = 0;
+        if (e.customSplit && e.customSplit[person] !== undefined) {
+          share = parseFloat(e.customSplit[person]) || 0;
+        } else if (e.split.includes(person)) {
+          share = amount / e.split.length;
+        }
+        if (share === 0 && person !== e.payer) return '';
+
+        const paidLabel = person === e.payer ? ' (paid)' : '';
+        const shareILS = toILS(share).toFixed(2);
+        const shareJPY = Math.round(toJPY(share)).toLocaleString();
+
+        return `<div class="debt-detail-row">
+          <span>${person}${paidLabel}</span>
+          <span>₪${shareILS} / ¥${shareJPY}</span>
+        </div>`;
+      }).filter(Boolean).join('');
+
+      openDebtModal(e.desc, lines);
+    });
+  });
 
   document.querySelectorAll('.expense-delete').forEach(btn => {
     btn.addEventListener('click', async () => {
