@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Japan Trip 2026 🇯🇵</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div id="app">
+    <header>
+      <h1>🇯🇵 Japan Trip 2026</h1>
+      <p class="subtitle">Amit · Moshe · Omri</p>
+    </header>
+
+    <div id="calendar-section">
+      <div class="month-nav">
+        <button id="prevMonth">◀</button>
+        <h2 id="monthTitle"></h2>
+        <button id="nextMonth">▶</button>
+      </div>
+      <div id="calendar"></div>
+    </div>
+
+    <div id="day-panel" class="hidden">
+      <div class="day-panel-header">
+        <button id="closePanel">✕</button>
+        <h2 id="dayTitle"></h2>
+        <button id="saveDay" class="save-btn">💾 Save</button>
+      </div>
+
+      <div class="section">
+        <h3>🏨 Accommodation</h3>
+        <input type="text" id="hotelName" placeholder="Hotel name" />
+        <input type="text" id="hotelAddress" placeholder="Hotel address" />
+      </div>
+
+      <div class="section">
+        <h3>📍 Places to Visit</h3>
+        <div id="placesList"></div>
+        <button class="add-btn" id="addPlace">+ Add Place</button>
+      </div>
+
+      <div class="section">
+        <h3>🍜 Food & Restaurants</h3>
+        <div id="foodList"></div>
+        <button class="add-btn" id="addFood">+ Add Restaurant / Food</button>
+      </div>
+
+      <div class="section">
+        <h3>🚆 Transportation</h3>
+        <textarea id="transportation" placeholder="e.g. Shinkansen Tokyo → Osaka, 09:00"></textarea>
+      </div>
+
+      <div class="section">
+        <h3>💴 Estimated Budget</h3>
+        <div class="budget-row">
+          <input type="number" id="budget" placeholder="Amount" />
+          <select id="budgetCurrency">
+            <option value="JPY">¥ JPY</option>
+            <option value="ILS">₪ ILS</option>
+            <option value="USD">$ USD</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>🌤️ Weather Notes</h3>
+        <input type="text" id="weather" placeholder="e.g. Rainy, 18°C — bring umbrella" />
+      </div>
+
+      <div class="section">
+        <h3>📝 General Notes</h3>
+        <textarea id="notes" placeholder="Anything else for this day..."></textarea>
+      </div>
+
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
