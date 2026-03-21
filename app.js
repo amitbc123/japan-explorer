@@ -327,7 +327,19 @@ document.getElementById('moodSelector').addEventListener('click', e => {
 });
 
 // ── Location Modal ──
+function openDebtModal(title, linesHtml) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-notes').innerHTML = linesHtml;
+  document.getElementById('modalSearchInput').style.display = 'none';
+  document.getElementById('modalSearchResults').style.display = 'none';
+  document.getElementById('modalMapsBtn').style.display = 'none';
+  document.getElementById('location-modal').classList.remove('hidden');
+}
+
 function openLocationModal(name, address, notes) {
+  document.getElementById('modalSearchInput').style.display = '';
+  document.getElementById('modalSearchResults').style.display = '';
+  document.getElementById('modalMapsBtn').style.display = '';
   document.getElementById('modal-title').textContent = name;
   document.getElementById('modal-notes').textContent = notes || '';
   document.getElementById('modalSearchInput').value = address || name;
@@ -537,14 +549,39 @@ function renderBalance(expenses) {
     summary.innerHTML = '<div class="balance-ok">✅ All settled up!</div>';
     return;
   }
-  summary.innerHTML = debts.map(d => `
-    <div class="balance-item">
+  summary.innerHTML = debts.map((d, idx) => `
+    <div class="balance-item" data-debt-index="${idx}" style="cursor:pointer;">
       <div class="balance-text">💸 ${d.from} owes ${d.to}</div>
       <div class="balance-amounts">
         <span class="balance-amount">₪${d.amountILS.toFixed(2)}</span>
         <span class="balance-amount-jpy">¥${Math.round(d.amountILS * jpyPerIls).toLocaleString()}</span>
       </div>
     </div>`).join('');
+
+  debts.forEach((d, idx) => {
+    document.querySelector(`[data-debt-index="${idx}"]`).addEventListener('click', () => {
+      const relevant = expenses.filter(e =>
+        e.payer === d.to && e.split.includes(d.from)
+      );
+      if (relevant.length === 0) return;
+      const lines = relevant.map(e => {
+        let share;
+        if (e.customSplit && e.customSplit[d.from]) {
+          share = parseFloat(e.customSplit[d.from]);
+          if (e.currency === 'JPY') share = share / jpyPerIls;
+        } else {
+          let amount = parseFloat(e.amount);
+          if (e.currency === 'JPY') amount = amount / jpyPerIls;
+          share = amount / e.split.length;
+        }
+        return `<div class="debt-detail-row">
+          <span>${e.desc}</span>
+          <span>₪${share.toFixed(2)} / ¥${Math.round(share * jpyPerIls).toLocaleString()}</span>
+        </div>`;
+      }).join('');
+      openDebtModal(`${d.from} owes ${d.to}`, lines);
+    });
+  });
 }
 
 document.getElementById('addExpenseBtn').addEventListener('click', async () => {
