@@ -137,7 +137,7 @@ function renderViewMode() {
   const moodEl = document.getElementById('view-mood');
   const moodMap = { sad: '😢', neutral: '😐', happy: '😄', angry: '😤' };
   if (d.mood) {
-    moodEl.innerHTML = `<h3>😄 Omri's Mood</h3><div class="mood-display">${moodMap[d.mood]}</div>`;
+    moodEl.innerHTML = `<h3>Omri Mood</h3><div class="mood-display">${moodMap[d.mood]}</div>`;
   } else { moodEl.innerHTML = ''; }
 
   document.querySelectorAll('.view-item').forEach(item => {
