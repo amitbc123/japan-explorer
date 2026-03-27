@@ -132,6 +132,7 @@ function renderItinerary() {
   itineraryData.forEach((stage, si) => {
     const card = document.createElement('div');
     card.className = 'stage-card';
+    card.dataset.stageId = stage.id;
     card.innerHTML = `
       <div class="stage-header">
         <span class="stage-chevron">▼</span>
@@ -351,8 +352,11 @@ function saveStop() {
     stage.stops.push(stopData);
   }
 
+const openStageId = modalStageId;
   saveItinerary();
   renderItinerary();
+  const openCard = document.querySelector(`.stage-card[data-stage-id="${openStageId}"]`);
+  if (openCard) openCard.classList.add('open');
   closeModal();
 }
 
