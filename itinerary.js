@@ -125,13 +125,13 @@ function getTagLabel(tag) {
   return map[tag] || tag;
 }
 
-function renderItinerary() {
+function renderItinerary(openAfterSave) {
   const list = document.getElementById('itinerary-list');
   if (!list) return;
   list.innerHTML = '';
   itineraryData.forEach((stage, si) => {
     const card = document.createElement('div');
-    card.className = 'stage-card';
+    card.className = 'stage-card' + (openAfterSave === stage.id ? ' open' : '');
     card.dataset.stageId = stage.id;
     card.innerHTML = `
       <div class="stage-header">
@@ -354,9 +354,7 @@ function saveStop() {
 
 const openStageId = modalStageId;
   saveItinerary();
-  renderItinerary();
-  const openCard = document.querySelector(`.stage-card[data-stage-id="${openStageId}"]`);
-  if (openCard) openCard.classList.add('open');
+  renderItinerary(openStageId);
   closeModal();
 }
 
