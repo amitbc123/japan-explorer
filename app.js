@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, collection, addDoc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDPeDrMQ9aPzwTO4wcdSAhpEmVBWIkhMxE",
@@ -100,233 +100,6 @@ document.getElementById('swapBtn').addEventListener('click', () => {
   document.getElementById('yen').value = '';
 });
 
-// ── Calendar ──
-const tripStart = new Date(2026, 9, 6);
-const tripEnd = new Date(2026, 11, 6);
-let currentMonth = new Date(2026, 9, 1);
-let selectedDate = null;
-let currentData = {};
-let selectedMood = '';
-
-function isTripDay(date) { return date >= tripStart && date <= tripEnd; }
-function formatDateKey(date) {
-  return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
-}
-function formatDateTitle(date) {
-  return date.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-}
-
-async function renderCalendar() {
-  const calendar = document.getElementById('calendar');
-  const monthTitle = document.getElementById('monthTitle');
-  monthTitle.textContent = currentMonth.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
-  calendar.innerHTML = '';
-  ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(d => {
-    const el = document.createElement('div');
-    el.className = 'cal-day-header';
-    el.textContent = d;
-    calendar.appendChild(el);
-  });
-  const firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay();
-  const daysInMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth()+1, 0).getDate();
-  const today = new Date();
-  const keys = [];
-  for (let d = 1; d <= daysInMonth; d++) {
-    const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), d);
-    keys.push({ date, key: formatDateKey(date) });
-  }
-  const snapshots = await Promise.all(keys.map(({ key }) => getDoc(doc(db, 'days', key))));
-  for (let i = 0; i < firstDay; i++) {
-    const empty = document.createElement('div');
-    empty.className = 'cal-day empty';
-    calendar.appendChild(empty);
-  }
-  keys.forEach(({ date }, i) => {
-    const el = document.createElement('div');
-    el.className = 'cal-day';
-    el.textContent = date.getDate();
-    if (isTripDay(date)) el.classList.add('trip-day');
-    if (date.toDateString() === today.toDateString()) el.classList.add('today');
-    if (selectedDate && date.toDateString() === selectedDate.toDateString()) el.classList.add('selected');
-    const snapData = snapshots[i].exists() ? snapshots[i].data() : {};
-    const hasRealData = snapData.hotelName || snapData.generalInfo || snapData.mood ||
-      (snapData.places && snapData.places.some(p => p.name)) ||
-      (snapData.food && snapData.food.some(f => f.name));
-    if (hasRealData) el.classList.add('has-data');
-    if (isTripDay(date)) {
-      el.addEventListener('click', () => {
-        selectedDate = date;
-        document.getElementById('calendarSection').classList.add('collapsed');
-        document.getElementById('day-panel').classList.remove('hidden');
-        document.getElementById('dayTitle').textContent = formatDateTitle(date);
-        showViewMode();
-        loadDayData(date);
-      });
-    }
-    calendar.appendChild(el);
-  });
-}
-
-async function loadDayData(date) {
-  const key = formatDateKey(date);
-  const snap = await getDoc(doc(db, 'days', key));
-  currentData = snap.exists() ? snap.data() : {};
-  selectedMood = currentData.mood || '';
-  renderViewMode();
-}
-
-function renderViewMode() {
-  const d = currentData;
-  const hotelEl = document.getElementById('view-hotel');
-  if (d.hotelName || d.hotelAddress) {
-    hotelEl.innerHTML = `<h3>🏨 Hotel</h3>
-      <div class="view-item" data-name="${d.hotelName||''}" data-address="${d.hotelAddress||''}" data-notes="">
-        <div class="view-item-name">${d.hotelName||''}</div>
-        <div class="view-item-tap">📍 Tap for location</div>
-      </div>`;
-  } else { hotelEl.innerHTML = ''; }
-
-  const generalEl = document.getElementById('view-general');
-  generalEl.innerHTML = d.generalInfo ? `<h3>📋 General Info</h3><p>${d.generalInfo}</p>` : '';
-
-  const placesEl = document.getElementById('view-places');
-  if (d.places && d.places.some(p => p.name)) {
-    placesEl.innerHTML = `<h3>📍 Attractions</h3>` + d.places.filter(p => p.name).map(p => `
-      <div class="view-item" data-name="${p.name||''}" data-address="${p.address||''}" data-notes="${p.notes||''}">
-        <div class="view-item-name">${p.name}</div>
-        <div class="view-item-tap">📍 Tap for details & location</div>
-      </div>`).join('');
-  } else { placesEl.innerHTML = ''; }
-
-  const foodEl = document.getElementById('view-food');
-  if (d.food && d.food.some(f => f.name)) {
-    foodEl.innerHTML = `<h3>🍜 Food</h3>` + d.food.filter(f => f.name).map(f => `
-      <div class="view-item" data-name="${f.name||''}" data-address="${f.address||''}" data-notes="${f.notes||''}">
-        <div class="view-item-name">${f.name}</div>
-        <div class="view-item-tap">📍 Tap for details & location</div>
-      </div>`).join('');
-  } else { foodEl.innerHTML = ''; }
-
-  const moodEl = document.getElementById('view-mood');
-  const moodMap = { sad: '😢', neutral: '😐', happy: '😄', angry: '😤' };
-  moodEl.innerHTML = d.mood ? `<h3>Omri Mood</h3><div class="mood-display">${moodMap[d.mood]}</div>` : '';
-
-  document.querySelectorAll('.view-item').forEach(item => {
-    item.addEventListener('click', () => openLocationModal(item.dataset.name, item.dataset.address, item.dataset.notes));
-  });
-}
-
-function showViewMode() {
-  document.getElementById('view-mode').classList.remove('hidden');
-  document.getElementById('edit-mode').classList.add('hidden');
-  document.getElementById('editBtn').classList.remove('hidden');
-}
-
-function showEditMode() {
-  document.getElementById('view-mode').classList.add('hidden');
-  document.getElementById('edit-mode').classList.remove('hidden');
-  document.getElementById('editBtn').classList.add('hidden');
-  const d = currentData;
-  document.getElementById('hotelName').value = d.hotelName || '';
-  document.getElementById('hotelAddress').value = d.hotelAddress || '';
-  document.getElementById('generalInfo').value = d.generalInfo || '';
-  selectedMood = d.mood || '';
-  document.querySelectorAll('.mood-btn').forEach(btn => btn.classList.toggle('selected', btn.dataset.mood === selectedMood));
-  renderPlaces(d.places || []);
-  renderFood(d.food || []);
-}
-
-function renderPlaces(places) {
-  const list = document.getElementById('placesList');
-  list.innerHTML = '';
-  places.forEach((p, i) => {
-    const div = document.createElement('div');
-    div.className = 'place-item';
-    div.innerHTML = `
-      <input type="text" placeholder="Attraction name" value="${p.name||''}" data-index="${i}" data-field="name" />
-      <input type="text" placeholder="Address" value="${p.address||''}" data-index="${i}" data-field="address" />
-      <textarea placeholder="Notes (optional)" data-index="${i}" data-field="notes">${p.notes||''}</textarea>
-      <button class="remove-btn" data-index="${i}">✕</button>`;
-    list.appendChild(div);
-  });
-}
-
-function renderFood(food) {
-  const list = document.getElementById('foodList');
-  list.innerHTML = '';
-  food.forEach((f, i) => {
-    const div = document.createElement('div');
-    div.className = 'food-item';
-    div.innerHTML = `
-      <input type="text" placeholder="Restaurant / Food name" value="${f.name||''}" data-index="${i}" data-field="name" />
-      <input type="text" placeholder="Address (optional)" value="${f.address||''}" data-index="${i}" data-field="address" />
-      <textarea placeholder="Notes (optional)" data-index="${i}" data-field="notes">${f.notes||''}</textarea>
-      <button class="remove-btn" data-index="${i}">✕</button>`;
-    list.appendChild(div);
-  });
-}
-
-function getPlaces() {
-  return Array.from(document.querySelectorAll('.place-item')).map(item => ({
-    name: item.querySelector('[data-field="name"]').value,
-    address: item.querySelector('[data-field="address"]').value,
-    notes: item.querySelector('[data-field="notes"]').value
-  }));
-}
-
-function getFood() {
-  return Array.from(document.querySelectorAll('.food-item')).map(item => ({
-    name: item.querySelector('[data-field="name"]').value,
-    address: item.querySelector('[data-field="address"]').value,
-    notes: item.querySelector('[data-field="notes"]').value
-  }));
-}
-
-async function saveDay() {
-  if (!selectedDate) return;
-  const key = formatDateKey(selectedDate);
-  currentData = {
-    hotelName: document.getElementById('hotelName').value,
-    hotelAddress: document.getElementById('hotelAddress').value,
-    generalInfo: document.getElementById('generalInfo').value,
-    places: getPlaces(),
-    food: getFood(),
-    mood: selectedMood
-  };
-  const isEmpty = !currentData.hotelName && !currentData.hotelAddress &&
-    !currentData.generalInfo && !currentData.mood &&
-    currentData.places.every(p => !p.name) && currentData.food.every(f => !f.name);
-  await setDoc(doc(db, 'days', key), isEmpty ? {} : currentData);
-  renderViewMode();
-  showViewMode();
-  renderCalendar();
-}
-
-document.getElementById('prevMonth').addEventListener('click', () => { currentMonth.setMonth(currentMonth.getMonth()-1); renderCalendar(); });
-document.getElementById('nextMonth').addEventListener('click', () => { currentMonth.setMonth(currentMonth.getMonth()+1); renderCalendar(); });
-document.getElementById('closePanel').addEventListener('click', () => {
-  document.getElementById('day-panel').classList.add('hidden');
-  document.getElementById('calendarSection').classList.remove('collapsed');
-  selectedDate = null; renderCalendar();
-});
-document.getElementById('editBtn').addEventListener('click', showEditMode);
-document.getElementById('cancelEdit').addEventListener('click', () => { showViewMode(); renderViewMode(); });
-document.getElementById('saveDay').addEventListener('click', saveDay);
-document.getElementById('addPlace').addEventListener('click', () => renderPlaces([...getPlaces(), { name:'', address:'', notes:'' }]));
-document.getElementById('addFood').addEventListener('click', () => renderFood([...getFood(), { name:'', address:'', notes:'' }]));
-document.getElementById('placesList').addEventListener('click', e => {
-  if (e.target.classList.contains('remove-btn')) { const p = getPlaces(); p.splice(+e.target.dataset.index,1); renderPlaces(p); }
-});
-document.getElementById('foodList').addEventListener('click', e => {
-  if (e.target.classList.contains('remove-btn')) { const f = getFood(); f.splice(+e.target.dataset.index,1); renderFood(f); }
-});
-document.getElementById('moodSelector').addEventListener('click', e => {
-  if (e.target.classList.contains('mood-btn')) {
-    selectedMood = e.target.dataset.mood;
-    document.querySelectorAll('.mood-btn').forEach(btn => btn.classList.toggle('selected', btn.dataset.mood === selectedMood));
-  }
-});
-
 // ── Location Modal ──
 function openDebtModal(title, linesHtml) {
   document.getElementById('modal-title').textContent = title;
@@ -348,10 +121,12 @@ function openLocationModal(name, address, notes) {
   document.getElementById('modalMapsBtn').href = `https://www.google.com/maps/search/${encodeURIComponent((name||'')+(address?' '+address:'')+' Japan')}`;
   document.getElementById('location-modal').classList.remove('hidden');
 }
+
 document.getElementById('closeModal').addEventListener('click', () => document.getElementById('location-modal').classList.add('hidden'));
 document.getElementById('location-modal').addEventListener('click', e => {
   if (e.target === document.getElementById('location-modal')) document.getElementById('location-modal').classList.add('hidden');
 });
+
 let searchTimeout;
 document.getElementById('modalSearchInput').addEventListener('input', e => {
   clearTimeout(searchTimeout);
@@ -380,7 +155,6 @@ document.getElementById('modalSearchInput').addEventListener('input', e => {
 let selectedPayer = 'Amit';
 let selectedSplit = ['Amit', 'Moshe', 'Omri'];
 
-
 document.querySelectorAll('.payer-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.payer-btn').forEach(b => b.classList.remove('active'));
@@ -392,16 +166,13 @@ document.querySelectorAll('.payer-btn').forEach(btn => {
 function updateCustomSplitInputs() {
   const amount = parseFloat(document.getElementById('expAmount').value) || 0;
   const equalShare = selectedSplit.length > 0 ? (amount / selectedSplit.length) : 0;
-
   people.forEach(person => {
     const input = document.getElementById('split' + person);
     const item = document.getElementById('customItem' + person);
     if (selectedSplit.includes(person)) {
       item.style.opacity = '1';
       input.disabled = false;
-      if (!input.value) {
-        input.placeholder = equalShare > 0 ? equalShare.toFixed(0) : 'Auto';
-      }
+      if (!input.value) input.placeholder = equalShare > 0 ? equalShare.toFixed(0) : 'Auto';
     } else {
       item.style.opacity = '0.3';
       input.disabled = true;
@@ -409,7 +180,6 @@ function updateCustomSplitInputs() {
       input.placeholder = '-';
     }
   });
-
   validateCustomSplit();
 }
 
@@ -417,14 +187,11 @@ function validateCustomSplit() {
   const amount = parseFloat(document.getElementById('expAmount').value) || 0;
   const validation = document.getElementById('splitValidation');
   if (amount === 0) { validation.textContent = ''; return true; }
-
   const amitVal = parseFloat(document.getElementById('splitAmit').value);
   const mosheVal = parseFloat(document.getElementById('splitMoshe').value);
   const omriVal = parseFloat(document.getElementById('splitOmri').value);
-
   const hasAny = !isNaN(amitVal) || !isNaN(mosheVal) || !isNaN(omriVal);
   if (!hasAny) { validation.textContent = ''; return true; }
-
   let total = 0;
   people.forEach(p => {
     if (selectedSplit.includes(p)) {
@@ -432,23 +199,18 @@ function validateCustomSplit() {
       if (!isNaN(v)) total += v;
     }
   });
-
   if (total > amount) {
     validation.textContent = `⚠️ Total (${total.toFixed(0)}) exceeds amount (${amount.toFixed(0)})`;
     validation.style.color = '#e94560';
-
     people.forEach(p => {
       if (selectedSplit.includes(p)) {
         const input = document.getElementById('split'+p);
         const v = parseFloat(input.value);
-        if (!isNaN(v) && v > amount) {
-          input.value = amount;
-        }
+        if (!isNaN(v) && v > amount) input.value = amount;
       }
     });
     return false;
   }
-
   if (Math.abs(total - amount) < 0.5) {
     validation.textContent = `✅ Split OK (${total.toFixed(0)})`;
     validation.style.color = '#52b788';
@@ -508,15 +270,11 @@ function renderExpenses(expenses) {
 
   expenses.forEach((e, idx) => {
     const item = document.querySelector(`[data-exp-index="${idx}"]`);
-
-  item.addEventListener('click', (ev) => {
+    item.addEventListener('click', (ev) => {
       if (ev.target.classList.contains('expense-delete') || ev.target.closest('.expense-delete')) return;
-
       let amount = parseFloat(e.amount);
-      const symbol = e.currency === 'JPY' ? '¥' : '₪';
       const toILS = e.currency === 'JPY' ? (v => v / jpyPerIls) : (v => v);
       const toJPY = e.currency === 'JPY' ? (v => v) : (v => v * jpyPerIls);
-
       const lines = people.map(person => {
         let share = 0;
         if (e.customSplit && e.customSplit[person] !== undefined) {
@@ -525,17 +283,12 @@ function renderExpenses(expenses) {
           share = amount / e.split.length;
         }
         if (share === 0 && person !== e.payer) return '';
-
         const paidLabel = person === e.payer ? ' (paid)' : '';
-        const shareILS = toILS(share).toFixed(2);
-        const shareJPY = Math.round(toJPY(share)).toLocaleString();
-
         return `<div class="debt-detail-row">
           <span>${person}${paidLabel}</span>
-          <span>₪${shareILS} / ¥${shareJPY}</span>
+          <span>₪${toILS(share).toFixed(2)} / ¥${Math.round(toJPY(share)).toLocaleString()}</span>
         </div>`;
       }).filter(Boolean).join('');
-
       openDebtModal(e.desc, lines);
     });
   });
@@ -550,7 +303,6 @@ function renderExpenses(expenses) {
 
 function renderBalance(expenses) {
   const balances = { Amit: 0, Moshe: 0, Omri: 0 };
-
   expenses.forEach(e => {
     let amount = parseFloat(e.amount);
     if (e.currency === 'JPY') amount = amount / jpyPerIls;
@@ -567,14 +319,13 @@ function renderBalance(expenses) {
 
   const debts = [];
   const bal = { ...balances };
-
   for (let i = 0; i < 10; i++) {
     const maxCreditor = people.reduce((a, b) => bal[a] > bal[b] ? a : b);
     const maxDebtor = people.reduce((a, b) => bal[a] < bal[b] ? a : b);
     if (Math.abs(bal[maxCreditor]) < 0.5 || Math.abs(bal[maxDebtor]) < 0.5) break;
     const amount = Math.min(bal[maxCreditor], -bal[maxDebtor]);
     if (amount < 0.5) break;
-    debts.push({ from: maxDebtor, to: maxCreditor, amountILS: amount });
+    debts.push({ from: maxDebtor, to: maxCreditor, amountILS: amount, expenses });
     bal[maxCreditor] -= amount;
     bal[maxDebtor] += amount;
   }
@@ -595,9 +346,7 @@ function renderBalance(expenses) {
 
   debts.forEach((d, idx) => {
     document.querySelector(`[data-debt-index="${idx}"]`).addEventListener('click', () => {
-      const relevant = expenses.filter(e =>
-        e.payer === d.to && e.split.includes(d.from)
-      );
+      const relevant = expenses.filter(e => e.payer === d.to && e.split.includes(d.from));
       if (relevant.length === 0) return;
       const lines = relevant.map(e => {
         let share;
@@ -623,7 +372,6 @@ document.getElementById('addExpenseBtn').addEventListener('click', async () => {
   const desc = document.getElementById('expDesc').value.trim();
   const amount = parseFloat(document.getElementById('expAmount').value);
   const currency = document.getElementById('expCurrency').value;
-
   if (!desc || isNaN(amount) || amount <= 0) {
     alert('Please enter a description and amount.');
     return;
@@ -632,12 +380,10 @@ document.getElementById('addExpenseBtn').addEventListener('click', async () => {
     alert('Please select at least one person to split with.');
     return;
   }
-
   const amitVal = parseFloat(document.getElementById('splitAmit').value);
   const mosheVal = parseFloat(document.getElementById('splitMoshe').value);
   const omriVal = parseFloat(document.getElementById('splitOmri').value);
   const hasCustom = !isNaN(amitVal) || !isNaN(mosheVal) || !isNaN(omriVal);
-
   let customSplit = null;
   if (hasCustom) {
     const equalShare = amount / selectedSplit.length;
@@ -647,7 +393,6 @@ document.getElementById('addExpenseBtn').addEventListener('click', async () => {
       Omri: selectedSplit.includes('Omri') ? (!isNaN(omriVal) ? omriVal : equalShare) : 0,
     };
   }
-
   await addDoc(collection(db, 'expenses'), {
     desc, amount, currency,
     payer: selectedPayer,
@@ -655,7 +400,6 @@ document.getElementById('addExpenseBtn').addEventListener('click', async () => {
     customSplit: customSplit,
     timestamp: Date.now()
   });
-
   document.getElementById('expDesc').value = '';
   document.getElementById('expAmount').value = '';
   document.getElementById('splitAmit').value = '';
@@ -906,7 +650,6 @@ document.getElementById('nextQuestion').addEventListener('click', () => { gameIn
 loadQuestion();
 
 // ── Init ──
-renderCalendar();
 loadExpenses();
 addSpeakButtons();
 updateCustomSplitInputs();
