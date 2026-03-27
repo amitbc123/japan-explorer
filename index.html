@@ -13,7 +13,6 @@
     <div class="sidebar-header">🇯🇵 JapanTrip 2026</div>
     <div class="sidebar-menu">
       <button class="nav-item active" data-page="home"><span class="nav-icon">🏠</span><span>Home</span></button>
-      <button class="nav-item" data-page="itinerary"><span class="nav-icon">🗾</span><span>Trip Plan</span></button>
       <button class="nav-item" data-page="expenses"><span class="nav-icon">💴</span><span>Expenses</span></button>
       <button class="nav-item" data-page="dict"><span class="nav-icon">📖</span><span>Dictionary</span></button>
       <button class="nav-item" data-page="toilet"><span class="nav-icon">🚽</span><span>Toilet Guide</span></button>
@@ -60,21 +59,15 @@
           <div class="rate-info" id="rateInfo">Loading rate...</div>
         </div>
 
+        <div class="trip-plan-section">
+          <h2 class="section-title">🗾 תכנון הטיול</h2>
+          <div id="itinerary-list"></div>
+          <button class="add-stage-btn" id="addStageBtn">+ Add Stage</button>
+        </div>
+
       </div>
     </div>
 
-
-<!-- ITINERARY PAGE -->
-    <div class="page" id="page-itinerary">
-      <div class="container">
-        <h2 class="page-title">🗾 Trip Plan</h2>
-
-        <div id="itinerary-list"></div>
-
-        <button class="add-stage-btn" id="addStageBtn">+ Add Stage</button>
-      </div>
-    </div>
-    
     <!-- EXPENSES PAGE -->
     <div class="page" id="page-expenses">
       <div class="container">
@@ -137,94 +130,72 @@
     <!-- DICTIONARY PAGE -->
     <div class="page" id="page-dict">
       <div class="container">
-        <h2 class="page-title">📖 Japanese Dictionary</h2>
-        <input type="text" id="dictSearch" placeholder="🔍 חפש בעברית..." class="dict-search" />
-        <div id="searchResults" class="search-results-container"></div>
+        <h2 class="page-title">📖 מילון יפני</h2>
+
+        <div class="dict-search-bar">
+          <input type="text" id="dictSearch" placeholder="חפש מילה בעברית או באנגלית..." class="dict-search-input" />
+        </div>
 
         <div class="dict-tabs">
-          <button class="dict-tab active" data-dict="basic">Daily</button>
-          <button class="dict-tab" data-dict="food">Food</button>
-          <button class="dict-tab" data-dict="social">Social</button>
-          <button class="dict-tab" data-dict="hotel">Hotel</button>
-          <button class="dict-tab" data-dict="transport">Transport</button>
-          <button class="dict-tab" data-dict="jokes">Jokes</button>
-          <button class="dict-tab" data-dict="emergency">Emergency</button>
-          <button class="dict-tab" data-dict="forbidden">🚫 Forbidden</button>
+          <button class="dict-tab active" data-section="dict-basic">בסיסי</button>
+          <button class="dict-tab" data-section="dict-food">אוכל</button>
+          <button class="dict-tab" data-section="dict-transport">תחבורה</button>
+          <button class="dict-tab" data-section="dict-shopping">קניות</button>
+          <button class="dict-tab" data-section="dict-jokes">בדיחות</button>
+          <button class="dict-tab" data-section="dict-emergency">חירום</button>
+          <button class="dict-tab" data-section="dict-forbidden">אסור</button>
         </div>
 
         <div class="dict-section active" id="dict-basic">
-          <div class="phrase-card"><div class="phrase-hebrew">סליחה</div><div class="phrase-japanese">Sumimasen</div><div class="phrase-pronunciation">すみません</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">תודה רבה</div><div class="phrase-japanese">Arigatou gozaimasu</div><div class="phrase-pronunciation">ありがとうございます</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">שלום</div><div class="phrase-japanese">Konnichiwa</div><div class="phrase-pronunciation">こんにちは</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">בוקר טוב</div><div class="phrase-japanese">Ohayou gozaimasu</div><div class="phrase-pronunciation">おはようございます</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">ערב טוב</div><div class="phrase-japanese">Konbanwa</div><div class="phrase-pronunciation">こんばんは</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">תודה</div><div class="phrase-japanese">Arigatou gozaimasu</div><div class="phrase-pronunciation">ありがとうございます</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">סליחה / התנצלות</div><div class="phrase-japanese">Sumimasen</div><div class="phrase-pronunciation">すみません</div></div>
           <div class="phrase-card"><div class="phrase-hebrew">כן</div><div class="phrase-japanese">Hai</div><div class="phrase-pronunciation">はい</div></div>
           <div class="phrase-card"><div class="phrase-hebrew">לא</div><div class="phrase-japanese">Iie</div><div class="phrase-pronunciation">いいえ</div></div>
           <div class="phrase-card"><div class="phrase-hebrew">אני לא מבין</div><div class="phrase-japanese">Wakarimasen</div><div class="phrase-pronunciation">わかりません</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">אתה מדבר אנגלית?</div><div class="phrase-japanese">Eigo o hanasemasu ka</div><div class="phrase-pronunciation">英語を話せますか</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">אפשר עזרה?</div><div class="phrase-japanese">Tasukete moraemasu ka</div><div class="phrase-pronunciation">助けてもらえますか</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">איפה השירותים?</div><div class="phrase-japanese">Toire wa doko desu ka</div><div class="phrase-pronunciation">トイレはどこですか</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">כמה זמן זה לוקח?</div><div class="phrase-japanese">Dono kurai kakarimasu ka</div><div class="phrase-pronunciation">どのくらいかかりますか</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">אפשר לשלם בכרטיס?</div><div class="phrase-japanese">Kaado de haraemasu ka</div><div class="phrase-pronunciation">カードで払えますか</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">רק מזומן</div><div class="phrase-japanese">Genkin dake desu</div><div class="phrase-pronunciation">現金だけです</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">אתה מדבר אנגלית?</div><div class="phrase-japanese">Eigo ga hanasemasu ka</div><div class="phrase-pronunciation">英語が話せますか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">שמי הוא...</div><div class="phrase-japanese">Watashi no namae wa ... desu</div><div class="phrase-pronunciation">私の名前は...です</div></div>
           <div class="phrase-card"><div class="phrase-hebrew">כמה זה עולה?</div><div class="phrase-japanese">Ikura desu ka</div><div class="phrase-pronunciation">いくらですか</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">איפה תחנת הרכבת?</div><div class="phrase-japanese">Eki wa doko desu ka</div><div class="phrase-pronunciation">駅はどこですか</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">גדול / קטן</div><div class="phrase-japanese">Ookii / Chiisai</div><div class="phrase-pronunciation">大きい / 小さい</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">מאוד</div><div class="phrase-japanese">Totemo</div><div class="phrase-pronunciation">とても</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">איפה השירותים?</div><div class="phrase-japanese">Toire wa doko desu ka</div><div class="phrase-pronunciation">トイレはどこですか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">לילה טוב</div><div class="phrase-japanese">Oyasumi nasai</div><div class="phrase-pronunciation">おやすみなさい</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">ברוכים הבאים</div><div class="phrase-japanese">Irasshaimase</div><div class="phrase-pronunciation">いらっしゃいませ</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">להתראות</div><div class="phrase-japanese">Sayounara</div><div class="phrase-pronunciation">さようなら</div></div>
         </div>
 
         <div class="dict-section" id="dict-food">
-          <div class="phrase-card"><div class="phrase-hebrew">אני אלרגי לחלב / ללקטוז</div><div class="phrase-japanese">Watashi wa gyuunyuu oyobi nyuuseihin ni arerugii ga arimasu</div><div class="phrase-pronunciation">私は牛乳および乳製品にアレルギーがあります</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">יש לי אלרגיה לחלב</div><div class="phrase-japanese">Gyuunyuu ni arerugii ga arimasu</div><div class="phrase-pronunciation">牛乳にアレルギーがあります</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">יש לי רגישות ללקטוז</div><div class="phrase-japanese">Nyuutou futaishou desu</div><div class="phrase-pronunciation">乳糖不耐症です</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">יש לי קוליטיס</div><div class="phrase-japanese">Daichouen ga arimasu</div><div class="phrase-pronunciation">大腸炎があります</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">יש בזה חלב?</div><div class="phrase-japanese">Kore wa gyuunyuu ga haitte imasu ka</div><div class="phrase-pronunciation">これは牛乳が入っていますか</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">יש בזה מוצרי חלב?</div><div class="phrase-japanese">Nyuuseihin wa haitte imasu ka</div><div class="phrase-pronunciation">乳製品は入っていますか</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">זה חריף?</div><div class="phrase-japanese">Kore wa karai desu ka</div><div class="phrase-pronunciation">これは辛いですか</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">זה מבושל או נא?</div><div class="phrase-japanese">Yaita desu ka, nama desu ka</div><div class="phrase-pronunciation">焼いたですか、生ですか</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">זה בטוח בשבילי?</div><div class="phrase-japanese">Tabete mo daijoubu desu ka</div><div class="phrase-pronunciation">食べても大丈夫ですか</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">אפשר בלי חלב?</div><div class="phrase-japanese">Gyuunyuu nashi de dekimasu ka</div><div class="phrase-pronunciation">牛乳なしでできますか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">חשבון בבקשה</div><div class="phrase-japanese">Okaikei onegaishimasu</div><div class="phrase-pronunciation">お会計お願いします</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">זה היה טעים מאוד</div><div class="phrase-japanese">Totemo oishikatta desu</div><div class="phrase-pronunciation">とても美味しかったです</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">אני רוצה להזמין</div><div class="phrase-japanese">Chuumon shitai desu</div><div class="phrase-pronunciation">注文したいです</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">יש לכם תפריט באנגלית?</div><div class="phrase-japanese">Eigo no menyu wa arimasu ka</div><div class="phrase-pronunciation">英語のメニューはありますか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">אני צמחוני</div><div class="phrase-japanese">Watashi wa bejitarian desu</div><div class="phrase-pronunciation">私はベジタリアンです</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">ללא בשר חזיר</div><div class="phrase-japanese">Buta niku nashi de onegaishimasu</div><div class="phrase-pronunciation">豚肉なしでお願いします</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">רמן</div><div class="phrase-japanese">Ramen</div><div class="phrase-pronunciation">ラーメン</div></div>
           <div class="phrase-card"><div class="phrase-hebrew">סושי</div><div class="phrase-japanese">Sushi</div><div class="phrase-pronunciation">寿司</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">ראמן</div><div class="phrase-japanese">Raamen</div><div class="phrase-pronunciation">ラーメン</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">טונה</div><div class="phrase-japanese">Maguro</div><div class="phrase-pronunciation">マグロ</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">סלמון</div><div class="phrase-japanese">Saamon</div><div class="phrase-pronunciation">サーモン</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">אנגיל (צלופח)</div><div class="phrase-japanese">Unagi</div><div class="phrase-pronunciation">うなぎ</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">שרימפס</div><div class="phrase-japanese">Ebi</div><div class="phrase-pronunciation">エビ</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">מה זה מכיל?</div><div class="phrase-japanese">Kore wa nani ga haitte imasu ka</div><div class="phrase-pronunciation">これは何が入っていますか</div></div>
-        </div>
-
-        <div class="dict-section" id="dict-social">
-          <div class="phrase-card"><div class="phrase-hebrew">סליחה, אפשר לשאול משהו?</div><div class="phrase-japanese">Sumimasen, chotto ii desu ka</div><div class="phrase-pronunciation">すみません、ちょっといいですか</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">לא רציתי להפריע</div><div class="phrase-japanese">Jama shite sumimasen</div><div class="phrase-pronunciation">邪魔してすみません</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">מאיפה את?</div><div class="phrase-japanese">Doko kara kimashita ka</div><div class="phrase-pronunciation">どこから来ましたか</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">אני מישראל</div><div class="phrase-japanese">Israeru kara kimashita</div><div class="phrase-pronunciation">イスラエルから来ました</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">המקום הזה נחמד</div><div class="phrase-japanese">Koko wa ii basho desu ne</div><div class="phrase-pronunciation">ここはいい場所ですね</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">נעים להכיר</div><div class="phrase-japanese">Yoroshiku onegaishimasu</div><div class="phrase-pronunciation">よろしくお願いします</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">כיף לדבר איתך</div><div class="phrase-japanese">Hanashite tanoshii desu</div><div class="phrase-pronunciation">話して楽しいです</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">את מאוד מקסימה</div><div class="phrase-japanese">Totemo suteki desu ne</div><div class="phrase-pronunciation">とても素敵ですね</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">אפשר לשבת לידך?</div><div class="phrase-japanese">Tonari ni suwatte mo ii desu ka</div><div class="phrase-pronunciation">隣に座ってもいいですか</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">בא לך קפה?</div><div class="phrase-japanese">Koohii demo ikimasen ka</div><div class="phrase-pronunciation">コーヒーでも行きませんか</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">אולי ניפגש שוב?</div><div class="phrase-japanese">Mata aimasen ka</div><div class="phrase-pronunciation">また会いませんか</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">יש לך LINE?</div><div class="phrase-japanese">Rain o tsukatte imasu ka</div><div class="phrase-pronunciation">LINEを使っていますか</div></div>
-        </div>
-
-        <div class="dict-section" id="dict-hotel">
-          <div class="phrase-card"><div class="phrase-hebrew">יש לי הזמנה</div><div class="phrase-japanese">Yoyaku ga arimasu</div><div class="phrase-pronunciation">予約があります</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">אפשר צ'ק-אין?</div><div class="phrase-japanese">Chekku in o onegaishimasu</div><div class="phrase-pronunciation">チェックインをお願いします</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">מתי צ'ק-אאוט?</div><div class="phrase-japanese">Chekku auto wa itsu desu ka</div><div class="phrase-pronunciation">チェックアウトはいつですか</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">יש Wi-Fi?</div><div class="phrase-japanese">Waifai wa arimasu ka</div><div class="phrase-pronunciation">Wi-Fiはありますか</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">מה הסיסמה?</div><div class="phrase-japanese">Pasuwaado wa nan desu ka</div><div class="phrase-pronunciation">パスワードは何ですか</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">יש מעלית?</div><div class="phrase-japanese">Erebeetaa wa arimasu ka</div><div class="phrase-pronunciation">エレベーターはありますか</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">אפשר לשמור על המזוודה?</div><div class="phrase-japanese">Nimotsu o azukatte moraemasu ka</div><div class="phrase-pronunciation">荷物を預かってもらえますか</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">יש בעיה בחדר</div><div class="phrase-japanese">Heya ni mondai ga arimasu</div><div class="phrase-pronunciation">部屋に問題があります</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">טמפורה</div><div class="phrase-japanese">Tenpura</div><div class="phrase-pronunciation">天ぷら</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">אוקונומיאקי</div><div class="phrase-japanese">Okonomiyaki</div><div class="phrase-pronunciation">お好み焼き</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">מים בבקשה</div><div class="phrase-japanese">Omizu kudasai</div><div class="phrase-pronunciation">お水ください</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">בירה בבקשה</div><div class="phrase-japanese">Biiru kudasai</div><div class="phrase-pronunciation">ビールください</div></div>
         </div>
 
         <div class="dict-section" id="dict-transport">
-          <div class="phrase-card"><div class="phrase-hebrew">איפה תחנת הרכבת?</div><div class="phrase-japanese">Eki wa doko desu ka</div><div class="phrase-pronunciation">駅はどこですか</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">איפה האוטובוס?</div><div class="phrase-japanese">Basu wa doko desu ka</div><div class="phrase-pronunciation">バスはどこですか</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">כמה זה עולה?</div><div class="phrase-japanese">Ikura desu ka</div><div class="phrase-pronunciation">いくらですか</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">מתי זה יוצא?</div><div class="phrase-japanese">Itsu demasu ka</div><div class="phrase-pronunciation">いつ出ますか</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">זה הקו הנכון?</div><div class="phrase-japanese">Kono sen de ii desu ka</div><div class="phrase-pronunciation">この線でいいですか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">איפה התחנה?</div><div class="phrase-japanese">Eki wa doko desu ka</div><div class="phrase-pronunciation">駅はどこですか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">כרטיס אחד לטוקיו</div><div class="phrase-japanese">Tokyo made ichi-mai kudasai</div><div class="phrase-pronunciation">東京まで一枚ください</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">איפה הרציף?</div><div class="phrase-japanese">Hoomu wa doko desu ka</div><div class="phrase-pronunciation">ホームはどこですか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">האוטובוס הזה הולך ל...?</div><div class="phrase-japanese">Kono basu wa ... ni ikimasu ka</div><div class="phrase-pronunciation">このバスは...に行きますか</div></div>
           <div class="phrase-card"><div class="phrase-hebrew">צריך להחליף רכבת?</div><div class="phrase-japanese">Norikae ga hitsuyou desu ka</div><div class="phrase-pronunciation">乗り換えが必要ですか</div></div>
           <div class="phrase-card"><div class="phrase-hebrew">תחנה הבאה</div><div class="phrase-japanese">Tsugi no eki</div><div class="phrase-pronunciation">次の駅</div></div>
           <div class="phrase-card"><div class="phrase-hebrew">אני צריך לרדת פה</div><div class="phrase-japanese">Koko de orimasu</div><div class="phrase-pronunciation">ここで降ります</div></div>
+        </div>
+
+        <div class="dict-section" id="dict-shopping">
+          <div class="phrase-card"><div class="phrase-hebrew">אני רק מסתכל</div><div class="phrase-japanese">Mite iru dake desu</div><div class="phrase-pronunciation">見ているだけです</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">יש לכם מידה L?</div><div class="phrase-japanese">L saizu wa arimasu ka</div><div class="phrase-pronunciation">Lサイズはありますか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">אפשר להחליף?</div><div class="phrase-japanese">Koukan dekimasu ka</div><div class="phrase-pronunciation">交換できますか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">יש הנחה?</div><div class="phrase-japanese">Waribiki wa arimasu ka</div><div class="phrase-pronunciation">割引はありますか</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">אני רוצה לקנות את זה</div><div class="phrase-japanese">Kore wo kaitai desu</div><div class="phrase-pronunciation">これを買いたいです</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">אפשר לשלם בכרטיס?</div><div class="phrase-japanese">Kaado de haraemasuka</div><div class="phrase-pronunciation">カードで払えますか</div></div>
         </div>
 
         <div class="dict-section" id="dict-jokes">
@@ -258,7 +229,7 @@
           <div class="phrase-card"><div class="phrase-hebrew">שתוק</div><div class="phrase-japanese">Urusai</div><div class="phrase-pronunciation">うるさい</div></div>
           <div class="phrase-card"><div class="phrase-hebrew">טיפש</div><div class="phrase-japanese">Baka</div><div class="phrase-pronunciation">バカ</div></div>
           <div class="phrase-card"><div class="phrase-hebrew">לך לעזאזל</div><div class="phrase-japanese">Achi ike</div><div class="phrase-pronunciation">あっちいけ</div></div>
-          <div class="phrase-card"><div class="phrase-hebrew">אני שונא אותך</div><div class="phrase-japanese">Anta ga kirai</div><div class="phrase-pronunciation">あんたが嫌い</div></div>
+          <div class="phrase-card"><div class="phrase-hebrew">אני שונא אותך</div><div class="phrase-japanese">Anta ga kirai</div><div class="phrase-pronunciation">あんתが嫌い</div></div>
         </div>
 
       </div>
@@ -355,7 +326,7 @@
     </div>
   </div>
 
-<script type="module" src="app.js"></script>
-  
+  <script type="module" src="app.js"></script>
+  <script type="module" src="itinerary.js"></script>
 </body>
 </html>
