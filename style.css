@@ -431,3 +431,168 @@ body {
 .game-option.wrong { background: rgba(233,69,96,.3); border-color: #e94560; }
 .game-feedback { font-size: 1rem; text-align: center; margin-bottom: 10px; min-height: 24px; }
 .game-score { font-size: .85rem; color: rgba(255,255,255,.5); text-align: center; }
+
+/* ── Itinerary ── */
+.add-stage-btn {
+  width: 100%; padding: 14px; margin-top: 10px;
+  background: rgba(255,255,255,.08);
+  border: 2px dashed rgba(255,255,255,.25);
+  color: rgba(255,255,255,.7); border-radius: 15px;
+  font-size: 1rem; cursor: pointer; transition: all .2s;
+}
+.add-stage-btn:hover { background: rgba(255,255,255,.12); }
+
+.stage-card {
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 18px; margin-bottom: 16px; overflow: hidden;
+}
+.stage-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 18px; cursor: pointer;
+  background: rgba(255,255,255,.04);
+}
+.stage-header-left { text-align: right; flex: 1; }
+.stage-name { font-size: 1.15rem; font-weight: 800; color: #fff; margin-bottom: 3px; }
+.stage-dates { font-size: .8rem; color: rgba(255,255,255,.5); }
+.stage-nights {
+  background: rgba(254,202,87,.2); color: #feca57;
+  padding: 4px 10px; border-radius: 20px; font-size: .8rem; font-weight: 700;
+  margin-left: 10px; white-space: nowrap;
+}
+.stage-chevron { color: rgba(255,255,255,.4); font-size: 1rem; margin-right: 8px; transition: transform .3s; }
+.stage-card.open .stage-chevron { transform: rotate(180deg); }
+
+.stage-body { display: none; padding: 0 14px 14px; }
+.stage-card.open .stage-body { display: block; }
+
+.stop-card {
+  background: rgba(255,255,255,.06); border-radius: 14px;
+  margin-bottom: 10px; overflow: hidden;
+  border: 1px solid rgba(255,255,255,.08);
+}
+.stop-img {
+  width: 100%; height: 140px; object-fit: cover; display: block;
+  background: rgba(255,255,255,.05);
+}
+.stop-img-placeholder {
+  width: 100%; height: 140px;
+  background: linear-gradient(135deg, rgba(233,69,96,.2), rgba(15,52,96,.4));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.5rem;
+}
+.stop-content { padding: 12px 14px; text-align: right; }
+.stop-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+.stop-name { font-size: 1rem; font-weight: 700; color: #fff; }
+.stop-nights-badge {
+  background: rgba(255,255,255,.1); color: rgba(255,255,255,.7);
+  padding: 2px 8px; border-radius: 10px; font-size: .75rem; white-space: nowrap;
+}
+.stop-dates { font-size: .78rem; color: rgba(255,255,255,.45); margin-bottom: 6px; }
+.stop-desc { font-size: .85rem; color: rgba(255,255,255,.7); line-height: 1.5; margin-bottom: 8px; }
+.stop-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
+.stop-tag {
+  padding: 3px 10px; border-radius: 12px; font-size: .72rem; font-weight: 600;
+}
+.tag-city { background: rgba(66,133,244,.25); color: #4285f4; }
+.tag-nature { background: rgba(43,147,72,.25); color: #52b788; }
+.tag-onsen { background: rgba(255,100,100,.25); color: #ff6b6b; }
+.tag-food { background: rgba(254,202,87,.25); color: #feca57; }
+.tag-culture { background: rgba(155,89,182,.25); color: #c77dff; }
+.tag-snow { background: rgba(173,216,230,.25); color: #add8e6; }
+.tag-ryokan { background: rgba(233,69,96,.25); color: #e94560; }
+.tag-quiet { background: rgba(144,238,144,.25); color: #90ee90; }
+.tag-wild { background: rgba(255,165,0,.25); color: #ffa500; }
+.tag-scenic { background: rgba(135,206,235,.25); color: #87ceeb; }
+.tag-volcano { background: rgba(255,69,0,.25); color: #ff4500; }
+
+.stop-actions { display: flex; gap: 8px; }
+.stop-maps-btn {
+  flex: 1; background: rgba(66,133,244,.15);
+  border: 1px solid rgba(66,133,244,.3);
+  color: #4285f4; padding: 8px; border-radius: 10px;
+  font-size: .82rem; cursor: pointer; text-decoration: none;
+  text-align: center; display: block;
+}
+.stop-edit-btn {
+  background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15);
+  color: rgba(255,255,255,.7); padding: 8px 12px; border-radius: 10px;
+  font-size: .82rem; cursor: pointer;
+}
+.stop-delete-btn {
+  background: rgba(233,69,96,.15); border: 1px solid rgba(233,69,96,.2);
+  color: #e94560; padding: 8px 12px; border-radius: 10px;
+  font-size: .82rem; cursor: pointer;
+}
+
+.stage-actions { display: flex; gap: 8px; margin-top: 8px; }
+.add-stop-btn {
+  flex: 1; background: rgba(254,202,87,.1);
+  border: 1px dashed rgba(254,202,87,.3);
+  color: #feca57; padding: 10px; border-radius: 12px;
+  font-size: .88rem; cursor: pointer;
+}
+.delete-stage-btn {
+  background: rgba(233,69,96,.1); border: 1px solid rgba(233,69,96,.2);
+  color: #e94560; padding: 10px 14px; border-radius: 12px;
+  font-size: .88rem; cursor: pointer;
+}
+
+/* Itinerary Modal */
+.itin-modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.7);
+  z-index: 2000; display: flex; align-items: flex-end;
+  justify-content: center; padding: 0;
+}
+.itin-modal-box {
+  background: #16213e; border-radius: 20px 20px 0 0;
+  width: 100%; max-width: 600px; padding: 24px 20px;
+  max-height: 90vh; overflow-y: auto;
+}
+.itin-modal-title {
+  font-size: 1.1rem; font-weight: 700; color: #feca57;
+  margin-bottom: 16px; text-align: right;
+}
+.itin-input {
+  width: 100%; background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 10px; color: #fff; padding: 10px 14px;
+  font-size: .95rem; margin-bottom: 10px; outline: none; text-align: right;
+}
+.itin-input::placeholder { color: rgba(255,255,255,.3); }
+.itin-textarea {
+  width: 100%; background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 10px; color: #fff; padding: 10px 14px;
+  font-size: .9rem; margin-bottom: 10px; outline: none;
+  text-align: right; min-height: 80px; resize: vertical;
+}
+.itin-label { font-size: .85rem; color: rgba(255,255,255,.5); margin-bottom: 5px; text-align: right; }
+.itin-tags-selector { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.itin-tag-btn {
+  padding: 5px 12px; border-radius: 12px; font-size: .78rem;
+  border: 1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.07);
+  color: rgba(255,255,255,.6); cursor: pointer; transition: all .2s;
+}
+.itin-tag-btn.active { background: #e94560; border-color: #e94560; color: #fff; }
+.itin-search-row { display: flex; gap: 8px; margin-bottom: 10px; }
+.itin-search-btn {
+  background: #e94560; border: none; color: #fff;
+  padding: 10px 16px; border-radius: 10px; cursor: pointer; font-size: .9rem;
+  white-space: nowrap;
+}
+.itin-fetched {
+  background: rgba(82,183,136,.1); border: 1px solid rgba(82,183,136,.3);
+  border-radius: 10px; padding: 10px; margin-bottom: 10px;
+  font-size: .82rem; color: rgba(255,255,255,.7); text-align: right;
+}
+.itin-modal-actions { display: flex; gap: 8px; margin-top: 6px; }
+.itin-save-btn {
+  flex: 1; background: #e94560; border: none; color: #fff;
+  padding: 12px; border-radius: 12px; font-size: 1rem;
+  font-weight: 700; cursor: pointer;
+}
+.itin-cancel-btn {
+  background: rgba(255,255,255,.08); border: none; color: rgba(255,255,255,.6);
+  padding: 12px 18px; border-radius: 12px; font-size: .95rem; cursor: pointer;
+}
