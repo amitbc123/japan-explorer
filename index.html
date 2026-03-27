@@ -13,6 +13,7 @@
     <div class="sidebar-header">🇯🇵 JapanTrip 2026</div>
     <div class="sidebar-menu">
       <button class="nav-item active" data-page="home"><span class="nav-icon">🏠</span><span>Home</span></button>
+      <button class="nav-item" data-page="itinerary"><span class="nav-icon">🗾</span><span>Trip Plan</span></button>
       <button class="nav-item" data-page="expenses"><span class="nav-icon">💴</span><span>Expenses</span></button>
       <button class="nav-item" data-page="dict"><span class="nav-icon">📖</span><span>Dictionary</span></button>
       <button class="nav-item" data-page="toilet"><span class="nav-icon">🚽</span><span>Toilet Guide</span></button>
@@ -120,6 +121,18 @@
       </div>
     </div>
 
+
+<!-- ITINERARY PAGE -->
+    <div class="page" id="page-itinerary">
+      <div class="container">
+        <h2 class="page-title">🗾 Trip Plan</h2>
+
+        <div id="itinerary-list"></div>
+
+        <button class="add-stage-btn" id="addStageBtn">+ Add Stage</button>
+      </div>
+    </div>
+    
     <!-- EXPENSES PAGE -->
     <div class="page" id="page-expenses">
       <div class="container">
@@ -401,5 +414,6 @@
   </div>
 
   <script type="module" src="app.js"></script>
+  <script type="module" src="itinerary.js"></script>
 </body>
 </html>
