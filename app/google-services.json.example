@@ -1,0 +1,23 @@
+{
+  "project_info": {
+    "project_number": "53809221413",
+    "project_id": "japan-explorer-22f18",
+    "storage_bucket": "japan-explorer-22f18.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "REPLACE_WITH_ANDROID_APP_ID",
+        "android_client_info": {
+          "package_name": "com.amitbc.japanexplorer"
+        }
+      },
+      "api_key": [
+        {
+          "current_key": "AIzaSyDPeDrMQ9aPzwTO4wcdSAhpEmVBWIkhMxE"
+        }
+      ]
+    }
+  ],
+  "configuration_version": "1"
+}
